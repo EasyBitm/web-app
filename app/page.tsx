@@ -6,20 +6,21 @@ import { getSemesters } from "../src/lib/data";
 
 export const dynamic = "force-dynamic";
 
-const stats = [
-  { label: "Active Learners", value: "400+" },
-  { label: "Community Members", value: "300+" },
-  { label: "Monthly Views", value: "80K" },
-];
-
 export default async function Home() {
   const semesters = await getSemesters();
+  const totalSubjects = semesters.reduce((sum, s) => sum + s.subjects.length, 0);
+
+  const stats = [
+    { label: "Semesters Covered", value: `${semesters.length || 8}` },
+    { label: "Subjects Listed", value: `${totalSubjects}+` },
+    { label: "Cost to Use", value: "Free" },
+  ];
 
   return (
     <div className="flex flex-col flex-1">
       <Header />
 
-      <section className="mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-12 px-6 py-20 lg:grid-cols-2">
+      <section className="mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-12 px-6 py-20 my-10 lg:grid-cols-2">
         <div className="flex flex-col gap-6">
           <h1 className="text-4xl font-bold leading-tight tracking-tight sm:text-5xl">
             Your <span className="text-accent">simple</span> guide to
@@ -49,12 +50,12 @@ export default async function Home() {
             >
               Start Learning
             </a>
-            <a
+            {/* <a
               href="#contact"
               className="rounded-full border border-border px-6 py-3 text-sm font-medium transition-colors hover:bg-surface"
             >
               Contribute
-            </a>
+            </a> */}
           </div>
         </div>
 
@@ -139,7 +140,7 @@ export default async function Home() {
             this platform better.
           </p>
           <a
-            href="mailto:info@example.com"
+            href="mailto:easybitm@gmail.com"
             className="mt-2 rounded-full bg-accent px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-accent/90"
           >
             Send Feedback

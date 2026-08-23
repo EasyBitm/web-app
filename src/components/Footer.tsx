@@ -21,8 +21,8 @@ export default function Footer() {
             <Image
               src="/logo-light.png"
               alt="easyBITM"
-              width={96}
-              height={28}
+              width={128}
+              height={32}
               className="hidden [html[data-theme='light']_&]:block"
             />
           </div>

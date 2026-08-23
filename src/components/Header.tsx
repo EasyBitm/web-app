@@ -136,12 +136,18 @@ export default function Header() {
         <nav className="hidden items-center gap-8 sm:flex">
           <ThemeToggle />
           <SemestersMenu />
-          <a
-            href="#notices"
+          <Link
+            href="/cmat"
+            className="text-sm font-medium text-muted hover:text-foreground"
+          >
+            CMAT
+          </Link>
+          <Link
+            href="/notices"
             className="text-sm font-medium text-muted hover:text-foreground"
           >
             Notices
-          </a>
+          </Link>
           {/* <a
             href="#why"
             className="text-sm font-medium text-muted hover:text-foreground"
