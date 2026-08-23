@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, BookOpen, Layers } from "lucide-react";
 import Header from "../../components/Header";
+import Footer from "../../components/Footer";
 import { getSemester, getSemesters, type Difficulty } from "../../lib/data";
 
 export const dynamic = "force-dynamic";
@@ -86,6 +87,8 @@ export default async function SemesterPage({
           ))}
         </div>
       </section>
+
+      <Footer />
     </div>
   );
 }
