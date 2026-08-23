@@ -1,39 +1,31 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { ChevronDown, Moon, Sun } from "lucide-react";
+import { supabase } from "../lib/supabaseClient";
 
-const semesters = [
-  "1st Semester",
-  "2nd Semester",
-  "3rd Semester",
-  "4th Semester",
-  "5th Semester",
-  "6th Semester",
-  "7th Semester",
-  "8th Semester",
-];
+type SemesterLink = { slug: string; name: string };
+
+function getInitialTheme(): boolean {
+  if (typeof window === "undefined") return true;
+  const stored = localStorage.getItem("theme");
+  return stored ? stored === "dark" : true;
+}
 
 function ThemeToggle() {
-  const [isDark, setIsDark] = useState<boolean | null>(null);
+  const [isDark, setIsDark] = useState<boolean>(getInitialTheme);
 
   useEffect(() => {
-    const stored = localStorage.getItem("theme");
-    const dark = stored ? stored === "dark" : true;
-    setIsDark(dark);
     document.documentElement.setAttribute(
       "data-theme",
-      dark ? "dark" : "light",
+      isDark ? "dark" : "light",
     );
-  }, []);
+  }, [isDark]);
 
   function toggle() {
     const next = !isDark;
     setIsDark(next);
-    document.documentElement.setAttribute(
-      "data-theme",
-      next ? "dark" : "light",
-    );
     localStorage.setItem("theme", next ? "dark" : "light");
   }
 
@@ -41,16 +33,19 @@ function ThemeToggle() {
     <button
       onClick={toggle}
       aria-label="Toggle theme"
+      suppressHydrationWarning
       className="flex items-center gap-1 rounded-full border border-border bg-surface p-1"
     >
       <span
+        suppressHydrationWarning
         className={`flex h-7 w-7 items-center justify-center rounded-full transition-colors ${
-          isDark === false ? "bg-surface-2" : ""
+          !isDark ? "bg-surface-2" : ""
         }`}
       >
         <Sun size={14} />
       </span>
       <span
+        suppressHydrationWarning
         className={`flex h-7 w-7 items-center justify-center rounded-full transition-colors ${
           isDark ? "bg-surface-2" : ""
         }`}
@@ -63,6 +58,7 @@ function ThemeToggle() {
 
 function SemestersMenu() {
   const [open, setOpen] = useState(false);
+  const [semesters, setSemesters] = useState<SemesterLink[]>([]);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -74,6 +70,15 @@ function SemestersMenu() {
     document.addEventListener("mousedown", onClick);
     return () => document.removeEventListener("mousedown", onClick);
   }, []);
+
+  useEffect(() => {
+    if (!open || semesters.length > 0) return;
+    supabase
+      .from("semesters")
+      .select("slug, name")
+      .order("sort_order", { ascending: true })
+      .then(({ data }) => setSemesters(data ?? []));
+  }, [open, semesters.length]);
 
   return (
     <div ref={ref} className="relative">
@@ -90,14 +95,14 @@ function SemestersMenu() {
       {open && (
         <div className="absolute left-1/2 top-full z-20 mt-3 grid w-72 -translate-x-1/2 grid-cols-2 gap-1 rounded-xl border border-border bg-surface p-2 shadow-xl">
           {semesters.map((s) => (
-            <a
-              key={s}
-              href="#semesters"
+            <Link
+              key={s.slug}
+              href={`/semester/${s.slug}`}
               onClick={() => setOpen(false)}
               className="rounded-lg px-3 py-2 text-center text-sm text-muted hover:bg-surface-2 hover:text-foreground"
             >
-              {s}
-            </a>
+              {s.name}
+            </Link>
           ))}
         </div>
       )}
@@ -126,7 +131,7 @@ export default function Header() {
           >
             Notices
           </a>
-          <a
+          {/* <a
             href="#why"
             className="text-sm font-medium text-muted hover:text-foreground"
           >
@@ -137,7 +142,7 @@ export default function Header() {
             className="text-sm font-medium text-muted hover:text-foreground"
           >
             Contact
-          </a>
+          </a> */}
         </nav>
       </div>
     </header>

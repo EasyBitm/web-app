@@ -1,4 +1,8 @@
+import Link from "next/link";
 import Header from "./components/Header";
+import { getSemesters } from "./lib/data";
+
+export const dynamic = "force-dynamic";
 
 const stats = [
   { label: "Active Learners", value: "400+" },
@@ -6,23 +10,14 @@ const stats = [
   { label: "Monthly Views", value: "80K" },
 ];
 
-const semesters = [
-  { name: "First Semester", subjects: 5 },
-  { name: "Second Semester", subjects: 5 },
-  { name: "Third Semester", subjects: 5 },
-  { name: "Fourth Semester", subjects: 5 },
-  { name: "Fifth Semester", subjects: 7 },
-  { name: "Sixth Semester", subjects: 5 },
-  { name: "Seventh Semester", subjects: 4 },
-  { name: "Eighth Semester", subjects: 1 },
-];
-
 const footerLinks = {
   Explore: ["Semesters", "Notices", "Why Us"],
   Company: ["About", "Team", "Feedback"],
 };
 
-export default function Home() {
+export default async function Home() {
+  const semesters = await getSemesters();
+
   return (
     <div className="flex flex-col flex-1">
       <Header />
@@ -89,21 +84,21 @@ export default function Home() {
         <h2 className="text-2xl font-semibold">Start Learning</h2>
         <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {semesters.map((s) => (
-            <a
-              key={s.name}
-              href="#"
+            <Link
+              key={s.slug}
+              href={`/semester/${s.slug}`}
               className="flex items-center justify-between rounded-xl border border-border bg-surface px-5 py-4 transition-colors hover:bg-surface-2"
             >
               <div>
                 <div className="font-medium">{s.name}</div>
                 <div className="text-sm text-muted">
-                  {s.subjects} subjects
+                  {s.subjects.length} subjects
                 </div>
               </div>
               <span className="flex h-8 w-8 items-center justify-center rounded-full bg-surface-2 text-muted">
                 &rsaquo;
               </span>
-            </a>
+            </Link>
           ))}
         </div>
       </section>
