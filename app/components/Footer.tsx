@@ -41,9 +41,9 @@ export default function Footer() {
         </div>
       </div>
       <div className="border-t border-border">
-        <div className="mx-auto flex w-full max-w-6xl flex-col items-start justify-between gap-2 px-6 py-4 text-xs text-muted sm:flex-row sm:items-center">
-          <span>© {new Date().getFullYear()} bitmapp. All rights reserved.</span>
-          <a href="mailto:info@example.com" className="hover:text-foreground">
+        <div className="mx-auto flex w-full max-w-6xl flex-col justify-center gap-2 px-6 py-4 text-xs text-muted sm:flex-row sm:items-center">
+          <span>© {new Date().getFullYear()} easyBITM. All rights reserved.</span>
+          <a href="mailto:easybitm@gmail.com" className="hover:text-foreground">
             info@example.com
           </a>
         </div>
