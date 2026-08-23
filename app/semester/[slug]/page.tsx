@@ -47,24 +47,6 @@ export default async function SemesterPage({
           <Layers size={14} />
           {semester.subjects.length} subjects
         </div>
-
-        <div className="mt-6 flex flex-wrap gap-2">
-          {semesters.map((s) => (
-            <Link
-              key={s.slug}
-              href={`/semester/${s.slug}`}
-              aria-current={s.slug === semester.slug ? "page" : undefined}
-              className={`rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
-                s.slug === semester.slug
-                  ? "border-accent bg-accent text-white"
-                  : "border-border text-muted hover:text-foreground"
-              }`}
-            >
-              {s.name}
-            </Link>
-          ))}
-        </div>
-
         <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {semester.subjects.map((subject) => (
             <div
