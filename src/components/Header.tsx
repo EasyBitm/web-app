@@ -122,6 +122,15 @@ export default function Header() {
             width={64}
             height={32}
             priority
+            className="hidden [html[data-theme='dark']_&]:block"
+          />
+          <Image
+            src="/logo-light.png"
+            alt="easyBITM"
+            width={64}
+            height={32}
+            priority
+            className="hidden [html[data-theme='light']_&]:block"
           />
         </Link>
         <nav className="hidden items-center gap-8 sm:flex">

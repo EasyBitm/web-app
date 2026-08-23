@@ -8,7 +8,7 @@ import {
   deleteSemester,
   getSemesters,
   type Semester,
-} from "../lib/data";
+} from "../../src/lib/data";
 
 function slugify(value: string) {
   return value

@@ -1,7 +1,8 @@
+import Image from "next/image";
 import Link from "next/link";
-import Header from "./components/Header";
-import Footer from "./components/Footer";
-import { getSemesters } from "./lib/data";
+import Header from "../src/components/Header";
+import Footer from "../src/components/Footer";
+import { getSemesters } from "../src/lib/data";
 
 export const dynamic = "force-dynamic";
 
@@ -57,22 +58,20 @@ export default async function Home() {
           </div>
         </div>
 
-        <div className="relative mx-auto grid h-72 w-full max-w-sm grid-cols-2 gap-4 sm:h-96">
-          <div className="col-span-2 rounded-2xl border border-border bg-surface p-5">
-            <div className="text-xs text-muted">Fifth Semester</div>
-            <div className="mt-1 font-medium">Compiler Design</div>
-            <div className="mt-4 h-1.5 w-full rounded-full bg-surface-2">
-              <div className="h-1.5 w-2/3 rounded-full bg-accent" />
-            </div>
-          </div>
-          <div className="rounded-2xl border border-border bg-accent/10 p-5">
-            <div className="text-2xl font-semibold text-accent">12</div>
-            <div className="mt-1 text-xs text-muted">Notes Available</div>
-          </div>
-          <div className="rounded-2xl border border-border bg-accent-2/10 p-5">
-            <div className="text-2xl font-semibold text-accent-2">6</div>
-            <div className="mt-1 text-xs text-muted">Guides Uploaded</div>
-          </div>
+        <div className="mx-auto flex w-full max-w-md flex-col items-center gap-6 text-center">
+          <Image
+            src="/TU-LOGO.png"
+            alt="Tribhuvan University Logo"
+            width={220}
+            height={220}
+            className="h-40 w-40 object-contain sm:h-56 sm:w-56"
+            priority
+          />
+          <p className="text-sm font-semibold leading-snug md:text-lg">
+            Bachelor of <span className="text-accent">Information Technology Management</span>
+            <br />
+            <span className="text-muted">(Tribhuvan University, Nepal)</span>
+          </p>
         </div>
       </section>
 

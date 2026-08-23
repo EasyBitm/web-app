@@ -11,7 +11,7 @@ import {
   updateSubject,
   type Difficulty,
   type Semester,
-} from "../../lib/data";
+} from "../../../src/lib/data";
 
 const difficulties: Difficulty[] = ["Easy", "Medium", "Hard"];
 

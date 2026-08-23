@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, BookOpen, Layers } from "lucide-react";
-import Header from "../../components/Header";
-import Footer from "../../components/Footer";
-import { getSemester, getSemesters, type Difficulty } from "../../lib/data";
+import Header from "../../../src/components/Header";
+import Footer from "../../../src/components/Footer";
+import { getSemester, getSemesters, type Difficulty } from "../../../src/lib/data";
 
 export const dynamic = "force-dynamic";
 

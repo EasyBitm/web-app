@@ -8,18 +8,26 @@ const footerLinks = {
 export default function Footer() {
   return (
     <footer className="border-t border-border">
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-6 py-16 sm:flex-row sm:justify-between">
-        <div className="flex max-w-xs flex-col gap-3">
-          <div className="flex items-center gap-2">
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-6 py-10 sm:flex-row sm:justify-between">
+        <div className="flex flex-row max-w-xs  gap-6 items-center">
+          <div className="flex">
             <Image
               src="/logo.png"
               alt="easyBITM"
               width={96}
               height={28}
+              className="hidden [html[data-theme='dark']_&]:block"
+            />
+            <Image
+              src="/logo-light.png"
+              alt="easyBITM"
+              width={96}
+              height={28}
+              className="hidden [html[data-theme='light']_&]:block"
             />
           </div>
           <p className="text-sm text-muted">
-            An attempt to make studying easier for everyone.
+            An attempt to make studying BITM easier for everyone.
           </p>
         </div>
 
@@ -41,10 +49,10 @@ export default function Footer() {
         </div>
       </div>
       <div className="border-t border-border">
-        <div className="mx-auto flex w-full max-w-6xl flex-col justify-center gap-2 px-6 py-4 text-xs text-muted sm:flex-row sm:items-center">
+        <div className="mx-auto flex w-full max-w-6xl flex-col justify-between gap-2 px-6 py-4 text-xs text-muted sm:flex-row sm:items-center">
           <span>© {new Date().getFullYear()} easyBITM. All rights reserved.</span>
           <a href="mailto:easybitm@gmail.com" className="hover:text-foreground">
-            info@example.com
+            easybitm@gmail.com
           </a>
         </div>
       </div>
