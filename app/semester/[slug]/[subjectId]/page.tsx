@@ -1,44 +1,23 @@
-import Image from "next/image";
 import { notFound } from "next/navigation";
-import { FileText, ListChecks, Video, ImageIcon } from "lucide-react";
+import { ListChecks } from "lucide-react";
 import Header from "../../../../src/components/Header";
 import Footer from "../../../../src/components/Footer";
 import Breadcrumbs from "../../../../src/components/Breadcrumbs";
+import SubjectTabs from "../../../../src/components/SubjectTabs";
 import {
   getSemester,
   getSubject,
-  type Resource,
+  type Difficulty,
   type ResourceKind,
 } from "../../../../src/lib/data";
 
 export const dynamic = "force-dynamic";
 
-const kindMeta: Record<ResourceKind, { label: string; icon: typeof FileText }> = {
-  notes: { label: "Notes", icon: FileText },
-  syllabus: { label: "Syllabus", icon: ListChecks },
-  video: { label: "Videos", icon: Video },
-  question_paper: { label: "Question Papers", icon: ImageIcon },
+const difficultyStyles: Record<Difficulty, string> = {
+  Easy: "bg-accent/15 text-accent",
+  Medium: "bg-amber-500/15 text-amber-500",
+  Hard: "bg-red-500/15 text-red-500",
 };
-
-function groupByYear(items: Resource[]) {
-  const years = Array.from(new Set(items.map((r) => r.year ?? 0))).sort(
-    (a, b) => b - a,
-  );
-  return years.map((year) => ({
-    year,
-    items: items.filter((r) => (r.year ?? 0) === year),
-  }));
-}
-
-function groupByLesson(items: Resource[]) {
-  const lessons = Array.from(new Set(items.map((r) => r.lesson ?? 0))).sort(
-    (a, b) => a - b,
-  );
-  return lessons.map((lesson) => ({
-    lesson,
-    items: items.filter((r) => (r.lesson ?? 0) === lesson),
-  }));
-}
 
 export default async function SubjectPage({
   params,
@@ -55,7 +34,9 @@ export default async function SubjectPage({
     notFound();
   }
 
-  const groups = (Object.keys(kindMeta) as ResourceKind[])
+  const groups = (
+    ["notes", "syllabus", "video", "question_paper"] as ResourceKind[]
+  )
     .map((kind) => ({
       kind,
       items: subject.resources.filter((r) => r.kind === kind),
@@ -75,12 +56,22 @@ export default async function SubjectPage({
           ]}
         />
 
-        <h1 className="mt-6 text-3xl font-bold tracking-tight">
+        <p className="mt-6 text-xs font-medium uppercase tracking-wide text-muted">
+          {subject.code}
+        </p>
+        <h1 className="mt-1 text-3xl font-bold tracking-tight">
           {subject.name}
         </h1>
-        <p className="mt-1 text-sm text-muted">
-          {subject.code} · {subject.chapters} chapters
-        </p>
+        <div className="mt-3 flex items-center gap-3">
+          <span
+            className={`rounded-full px-3 py-1 text-xs font-medium ${difficultyStyles[subject.difficulty]}`}
+          >
+            {subject.difficulty}
+          </span>
+          <span className="text-sm text-muted">
+            {subject.chapters} chapters
+          </span>
+        </div>
 
         {subject.lessons.length > 0 && (
           <div className="mt-8">
@@ -109,97 +100,7 @@ export default async function SubjectPage({
           </div>
         )}
 
-        <div className="mt-10 flex flex-col gap-8">
-          {groups.length === 0 && (
-            <div className="text-sm text-muted">
-              No resources added for this subject yet.
-            </div>
-          )}
-          {groups.map(({ kind, items }) => {
-            const Icon = kindMeta[kind].icon;
-            return (
-              <div key={kind}>
-                <div className="flex items-center gap-2 text-sm font-medium text-muted">
-                  <Icon size={16} />
-                  {kindMeta[kind].label}
-                </div>
-
-                {kind === "question_paper" ? (
-                  <div className="mt-3 flex flex-col gap-6">
-                    {groupByYear(items).map(({ year, items: yearItems }) => (
-                      <div key={year}>
-                        <div className="text-xs font-medium text-muted">
-                          {year || "Year unspecified"}
-                        </div>
-                        <div className="mt-2 grid grid-cols-2 gap-3 sm:grid-cols-3">
-                          {yearItems.map((item) => (
-                            <a
-                              key={item.id}
-                              href={item.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="group overflow-hidden rounded-xl border border-border bg-surface"
-                            >
-                              <div className="relative aspect-3/4 w-full bg-surface-2">
-                                <Image
-                                  src={item.url}
-                                  alt={item.title}
-                                  fill
-                                  className="object-cover transition-transform group-hover:scale-105"
-                                  unoptimized
-                                />
-                              </div>
-                              <div className="px-2 py-1.5 text-xs font-medium">
-                                {item.title}
-                              </div>
-                            </a>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : kind === "notes" ? (
-                  <div className="mt-3 flex flex-col gap-4">
-                    {groupByLesson(items).map(({ lesson, items: lessonItems }) => (
-                      <div key={lesson}>
-                        <div className="text-xs font-medium text-muted">
-                          {lesson ? `Lesson ${lesson}` : "Lesson unspecified"}
-                        </div>
-                        <div className="mt-2 flex flex-col gap-2">
-                          {lessonItems.map((item) => (
-                            <a
-                              key={item.id}
-                              href={item.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="rounded-xl border border-border bg-surface px-4 py-3 text-sm font-medium transition-colors hover:bg-surface-2"
-                            >
-                              {item.title}
-                            </a>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="mt-3 flex flex-col gap-2">
-                    {items.map((item) => (
-                      <a
-                        key={item.id}
-                        href={item.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="rounded-xl border border-border bg-surface px-4 py-3 text-sm font-medium transition-colors hover:bg-surface-2"
-                      >
-                        {item.title}
-                      </a>
-                    ))}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
+        <SubjectTabs groups={groups} />
       </section>
 
       <Footer />
