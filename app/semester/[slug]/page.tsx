@@ -74,9 +74,12 @@ export default async function SemesterPage({
               </div>
 
               <div className="mt-4 flex items-center justify-between">
-                <button className="rounded-full border border-border px-4 py-1.5 text-sm font-medium transition-colors hover:bg-surface-2">
+                <Link
+                  href={`/subject/${subject.id}`}
+                  className="rounded-full border border-border px-4 py-1.5 text-sm font-medium transition-colors hover:bg-surface-2"
+                >
                   Learn
-                </button>
+                </Link>
                 <span
                   className={`rounded-full px-3 py-1 text-xs font-medium ${difficultyStyles[subject.difficulty]}`}
                 >

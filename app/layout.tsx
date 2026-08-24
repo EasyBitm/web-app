@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "BITM | Bachelor in Information Technology and Management",
+  title: "easyBITM | Bachelor in Information Technology and Management",
   description:
-    "BITM is a Tribhuvan University-affiliated program in Information Technology and Management, offering semester resources, CMAT prep, and notices for students.",
+    "easyBITM is a resource hub for the Tribhuvan University-affiliated BITM program in Information Technology and Management, offering semester resources, CMAT prep, and notices for students.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

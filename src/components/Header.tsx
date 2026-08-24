@@ -8,6 +8,26 @@ import { supabase } from "../lib/supabaseClient";
 
 type SemesterLink = { slug: string; name: string };
 
+let semestersCache: SemesterLink[] | null = null;
+let semestersFetchPromise: Promise<SemesterLink[]> | null = null;
+
+function fetchSemesters(): Promise<SemesterLink[]> {
+  if (semestersCache) return Promise.resolve(semestersCache);
+  if (!semestersFetchPromise) {
+    semestersFetchPromise = Promise.resolve(
+      supabase
+        .from("semesters")
+        .select("slug, name")
+        .eq("is_visible", true)
+        .order("sort_order", { ascending: true }),
+    ).then(({ data }) => {
+      semestersCache = data ?? [];
+      return semestersCache!;
+    });
+  }
+  return semestersFetchPromise;
+}
+
 function getInitialTheme(): boolean {
   if (typeof window === "undefined") return true;
   const stored = localStorage.getItem("theme");
@@ -73,13 +93,8 @@ function SemestersMenu() {
   }, []);
 
   useEffect(() => {
-    if (!open || semesters.length > 0) return;
-    supabase
-      .from("semesters")
-      .select("slug, name")
-      .order("sort_order", { ascending: true })
-      .then(({ data }) => setSemesters(data ?? []));
-  }, [open, semesters.length]);
+    fetchSemesters().then(setSemesters);
+  }, []);
 
   return (
     <div ref={ref} className="relative">

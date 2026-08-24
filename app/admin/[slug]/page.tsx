@@ -210,13 +210,21 @@ export default function AdminSemesterPage({
                 ))}
               </select>
             </div>
-            <button
-              onClick={() => handleDeleteSubject(subject.id)}
-              aria-label="Delete subject"
-              className="flex h-8 w-8 items-center justify-center self-end rounded-full text-muted transition-colors hover:bg-red-500/10 hover:text-red-500 sm:self-center"
-            >
-              <Trash2 size={16} />
-            </button>
+            <div className="flex items-center gap-2 self-end sm:self-center">
+              <Link
+                href={`/admin/${slug}/${subject.id}`}
+                className="rounded-full border border-border px-4 py-1.5 text-sm font-medium transition-colors hover:bg-surface-2"
+              >
+                Resources
+              </Link>
+              <button
+                onClick={() => handleDeleteSubject(subject.id)}
+                aria-label="Delete subject"
+                className="flex h-8 w-8 items-center justify-center rounded-full text-muted transition-colors hover:bg-red-500/10 hover:text-red-500"
+              >
+                <Trash2 size={16} />
+              </button>
+            </div>
           </div>
         ))}
       </div>

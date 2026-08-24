@@ -102,7 +102,7 @@ export default async function Home() {
       <section id="why" className="border-t border-border">
         <div className="mx-auto w-full max-w-3xl px-6 py-20 text-center">
           <h2 className="text-2xl font-semibold">
-            Why <span className="text-accent">bitm</span>app?
+            Why <span className="text-accent">easy</span>BITM?
           </h2>
           <p className="mt-3 text-muted">
             Everything organized in one place, updated by the community, and
