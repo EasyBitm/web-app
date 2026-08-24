@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { use, useEffect, useState } from "react";
-import { ArrowLeft, Trash2 } from "lucide-react";
+import { ArrowLeft, Trash2, Upload } from "lucide-react";
 import {
   createResource,
   deleteResource,
@@ -11,8 +11,16 @@ import {
   type ResourceKind,
   type SubjectWithResources,
 } from "../../../../src/lib/data";
+import { uploadResourceFile } from "../../../../src/lib/storage";
 
-const kinds: ResourceKind[] = ["notes", "syllabus", "video", "other"];
+const kinds: ResourceKind[] = ["notes", "syllabus", "video", "question_paper"];
+
+const kindLabels: Record<ResourceKind, string> = {
+  notes: "Notes (PDF)",
+  syllabus: "Syllabus (PDF)",
+  video: "Video (URL)",
+  question_paper: "Question Paper (PNG)",
+};
 
 export default function AdminSubjectPage({
   params,
@@ -24,8 +32,24 @@ export default function AdminSubjectPage({
   const [loading, setLoading] = useState(true);
   const [title, setTitle] = useState("");
   const [url, setUrl] = useState("");
+  const [year, setYear] = useState("");
+  const [lesson, setLesson] = useState("");
   const [kind, setKind] = useState<ResourceKind>("notes");
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+
+  async function handleFile(file: File | undefined) {
+    if (!file) return;
+    setUploading(true);
+    try {
+      const publicUrl = await uploadResourceFile(file);
+      setUrl(publicUrl);
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Upload failed");
+    } finally {
+      setUploading(false);
+    }
+  }
 
   async function load() {
     setLoading(true);
@@ -42,17 +66,22 @@ export default function AdminSubjectPage({
   async function handleAdd(e: React.FormEvent) {
     e.preventDefault();
     if (!subject || !title.trim() || !url.trim()) return;
+    if (kind === "question_paper" && !year.trim()) return;
+    if (kind === "notes" && !lesson.trim()) return;
     setSaving(true);
     await createResource({
       subject_id: subject.id,
       kind,
       title: title.trim(),
       url: url.trim(),
+      year: kind === "question_paper" ? Number(year) : null,
+      lesson: kind === "notes" ? Number(lesson) : null,
       sort_order: subject.resources.length + 1,
     });
     setTitle("");
     setUrl("");
-    setKind("notes");
+    setYear("");
+    setLesson("");
     setSaving(false);
     load();
   }
@@ -99,40 +128,93 @@ export default function AdminSubjectPage({
         {subject.name}
       </h1>
       <p className="mt-1 text-sm text-muted">
-        {subject.code} · Manage notes, syllabus, videos, and other links.
+        {subject.code} · Manage notes, syllabus, videos, and question papers.
       </p>
 
       <form
         onSubmit={handleAdd}
-        className="mt-8 grid grid-cols-1 gap-2 rounded-xl border border-border bg-surface p-4 sm:grid-cols-5"
+        className="mt-8 grid grid-cols-1 gap-2 rounded-xl border border-border bg-surface p-4 sm:grid-cols-6"
       >
         <select
           value={kind}
           onChange={(e) => setKind(e.target.value as ResourceKind)}
-          className="rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:border-accent"
+          className="rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:border-accent sm:col-span-2"
         >
           {kinds.map((k) => (
             <option key={k} value={k}>
-              {k}
+              {kindLabels[k]}
             </option>
           ))}
         </select>
         <input
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          placeholder="Title (e.g. Chapter 1 Notes)"
+          placeholder={
+            kind === "question_paper"
+              ? "Title (e.g. Page 1)"
+              : kind === "notes"
+                ? "Title (e.g. Lesson 1 Notes)"
+                : "Title"
+          }
           className="rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:border-accent sm:col-span-2"
         />
+        {kind === "question_paper" && (
+          <input
+            type="number"
+            value={year}
+            onChange={(e) => setYear(e.target.value)}
+            placeholder="Year"
+            className="rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:border-accent"
+          />
+        )}
+        {kind === "notes" && (
+          <input
+            type="number"
+            min={1}
+            value={lesson}
+            onChange={(e) => setLesson(e.target.value)}
+            placeholder="Lesson #"
+            className="rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:border-accent"
+          />
+        )}
         <input
           value={url}
           onChange={(e) => setUrl(e.target.value)}
-          placeholder="URL"
-          className="rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:border-accent sm:col-span-2"
+          placeholder={
+            kind === "video"
+              ? "YouTube video URL"
+              : uploading
+                ? "Uploading…"
+                : "URL (or upload a file →)"
+          }
+          disabled={uploading}
+          className={`rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:border-accent disabled:opacity-50 ${
+            kind === "question_paper" || kind === "notes"
+              ? "sm:col-span-1"
+              : "sm:col-span-2"
+          }`}
         />
+        {kind !== "video" && (
+          <label
+            className={`flex cursor-pointer items-center justify-center gap-1.5 rounded-lg border border-dashed border-border px-3 py-2 text-sm text-muted transition-colors hover:bg-background ${
+              uploading ? "opacity-50" : ""
+            }`}
+          >
+            <Upload size={14} />
+            {uploading ? "Uploading…" : "Upload file"}
+            <input
+              type="file"
+              accept={kind === "question_paper" ? "image/png" : "application/pdf"}
+              disabled={uploading}
+              onChange={(e) => handleFile(e.target.files?.[0])}
+              className="hidden"
+            />
+          </label>
+        )}
         <button
           type="submit"
-          disabled={saving}
-          className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent/90 disabled:opacity-50 sm:col-span-5"
+          disabled={saving || uploading}
+          className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent/90 disabled:opacity-50 sm:col-span-6"
         >
           Add Resource
         </button>
@@ -155,11 +237,11 @@ export default function AdminSubjectPage({
                     kind: e.target.value as ResourceKind,
                   }).then(load)
                 }
-                className="rounded-lg border border-border bg-background px-2 py-1 text-xs sm:w-28"
+                className="rounded-lg border border-border bg-background px-2 py-1 text-xs sm:w-40"
               >
                 {kinds.map((k) => (
                   <option key={k} value={k}>
-                    {k}
+                    {kindLabels[k]}
                   </option>
                 ))}
               </select>
@@ -171,8 +253,35 @@ export default function AdminSubjectPage({
                       title: e.target.value,
                     }).then(load);
                 }}
-                className="rounded-lg border border-transparent bg-transparent px-1 py-1 text-sm font-medium outline-none focus:border-border focus:bg-background sm:w-56"
+                className="rounded-lg border border-transparent bg-transparent px-1 py-1 text-sm font-medium outline-none focus:border-border focus:bg-background sm:w-48"
               />
+              {resource.kind === "question_paper" && (
+                <input
+                  type="number"
+                  defaultValue={resource.year ?? ""}
+                  onBlur={(e) => {
+                    const val = e.target.value ? Number(e.target.value) : null;
+                    if (val !== resource.year)
+                      updateResource(resource.id, { year: val }).then(load);
+                  }}
+                  placeholder="Year"
+                  className="rounded-lg border border-transparent bg-transparent px-1 py-1 text-xs text-muted outline-none focus:border-border focus:bg-background sm:w-16"
+                />
+              )}
+              {resource.kind === "notes" && (
+                <input
+                  type="number"
+                  min={1}
+                  defaultValue={resource.lesson ?? ""}
+                  onBlur={(e) => {
+                    const val = e.target.value ? Number(e.target.value) : null;
+                    if (val !== resource.lesson)
+                      updateResource(resource.id, { lesson: val }).then(load);
+                  }}
+                  placeholder="Lesson #"
+                  className="rounded-lg border border-transparent bg-transparent px-1 py-1 text-xs text-muted outline-none focus:border-border focus:bg-background sm:w-20"
+                />
+              )}
               <input
                 defaultValue={resource.url}
                 onBlur={(e) => {

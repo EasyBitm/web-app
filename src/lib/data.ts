@@ -2,7 +2,7 @@ import { supabase } from "./supabaseClient";
 
 export type Difficulty = "Easy" | "Medium" | "Hard";
 
-export type ResourceKind = "notes" | "syllabus" | "video" | "other";
+export type ResourceKind = "notes" | "syllabus" | "video" | "question_paper";
 
 export type Resource = {
   id: string;
@@ -10,6 +10,8 @@ export type Resource = {
   kind: ResourceKind;
   title: string;
   url: string;
+  year: number | null;
+  lesson: number | null;
   sort_order: number;
 };
 
@@ -182,6 +184,8 @@ export async function createResource(input: {
   kind: ResourceKind;
   title: string;
   url: string;
+  year?: number | null;
+  lesson?: number | null;
   sort_order: number;
 }) {
   const { error } = await supabase.from("resources").insert(input);
@@ -194,6 +198,8 @@ export async function updateResource(
     kind: ResourceKind;
     title: string;
     url: string;
+    year: number | null;
+    lesson: number | null;
     sort_order: number;
   }>,
 ) {

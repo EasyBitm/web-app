@@ -1,9 +1,10 @@
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, FileText, ListChecks, Video, Link as LinkIcon } from "lucide-react";
+import { ArrowLeft, FileText, ListChecks, Video, ImageIcon } from "lucide-react";
 import Header from "../../../src/components/Header";
 import Footer from "../../../src/components/Footer";
-import { getSubject, type ResourceKind } from "../../../src/lib/data";
+import { getSubject, type Resource, type ResourceKind } from "../../../src/lib/data";
 
 export const dynamic = "force-dynamic";
 
@@ -11,8 +12,28 @@ const kindMeta: Record<ResourceKind, { label: string; icon: typeof FileText }> =
   notes: { label: "Notes", icon: FileText },
   syllabus: { label: "Syllabus", icon: ListChecks },
   video: { label: "Videos", icon: Video },
-  other: { label: "Other", icon: LinkIcon },
+  question_paper: { label: "Question Papers", icon: ImageIcon },
 };
+
+function groupByYear(items: Resource[]) {
+  const years = Array.from(new Set(items.map((r) => r.year ?? 0))).sort(
+    (a, b) => b - a,
+  );
+  return years.map((year) => ({
+    year,
+    items: items.filter((r) => (r.year ?? 0) === year),
+  }));
+}
+
+function groupByLesson(items: Resource[]) {
+  const lessons = Array.from(new Set(items.map((r) => r.lesson ?? 0))).sort(
+    (a, b) => a - b,
+  );
+  return lessons.map((lesson) => ({
+    lesson,
+    items: items.filter((r) => (r.lesson ?? 0) === lesson),
+  }));
+}
 
 export default async function SubjectPage({
   params,
@@ -67,19 +88,79 @@ export default async function SubjectPage({
                   <Icon size={16} />
                   {kindMeta[kind].label}
                 </div>
-                <div className="mt-3 flex flex-col gap-2">
-                  {items.map((item) => (
-                    <a
-                      key={item.id}
-                      href={item.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="rounded-xl border border-border bg-surface px-4 py-3 text-sm font-medium transition-colors hover:bg-surface-2"
-                    >
-                      {item.title}
-                    </a>
-                  ))}
-                </div>
+
+                {kind === "question_paper" ? (
+                  <div className="mt-3 flex flex-col gap-6">
+                    {groupByYear(items).map(({ year, items: yearItems }) => (
+                      <div key={year}>
+                        <div className="text-xs font-medium text-muted">
+                          {year || "Year unspecified"}
+                        </div>
+                        <div className="mt-2 grid grid-cols-2 gap-3 sm:grid-cols-3">
+                          {yearItems.map((item) => (
+                            <a
+                              key={item.id}
+                              href={item.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="group overflow-hidden rounded-xl border border-border bg-surface"
+                            >
+                              <div className="relative aspect-3/4 w-full bg-surface-2">
+                                <Image
+                                  src={item.url}
+                                  alt={item.title}
+                                  fill
+                                  className="object-cover transition-transform group-hover:scale-105"
+                                  unoptimized
+                                />
+                              </div>
+                              <div className="px-2 py-1.5 text-xs font-medium">
+                                {item.title}
+                              </div>
+                            </a>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : kind === "notes" ? (
+                  <div className="mt-3 flex flex-col gap-4">
+                    {groupByLesson(items).map(({ lesson, items: lessonItems }) => (
+                      <div key={lesson}>
+                        <div className="text-xs font-medium text-muted">
+                          {lesson ? `Lesson ${lesson}` : "Lesson unspecified"}
+                        </div>
+                        <div className="mt-2 flex flex-col gap-2">
+                          {lessonItems.map((item) => (
+                            <a
+                              key={item.id}
+                              href={item.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="rounded-xl border border-border bg-surface px-4 py-3 text-sm font-medium transition-colors hover:bg-surface-2"
+                            >
+                              {item.title}
+                            </a>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="mt-3 flex flex-col gap-2">
+                    {items.map((item) => (
+                      <a
+                        key={item.id}
+                        href={item.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="rounded-xl border border-border bg-surface px-4 py-3 text-sm font-medium transition-colors hover:bg-surface-2"
+                      >
+                        {item.title}
+                      </a>
+                    ))}
+                  </div>
+                )}
               </div>
             );
           })}
