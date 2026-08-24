@@ -1,7 +1,7 @@
-import Link from "next/link";
-import { ArrowLeft, GraduationCap } from "lucide-react";
+import { GraduationCap } from "lucide-react";
 import Header from "../../src/components/Header";
 import Footer from "../../src/components/Footer";
+import Breadcrumbs from "../../src/components/Breadcrumbs";
 
 export default function CmatPage() {
   return (
@@ -9,13 +9,9 @@ export default function CmatPage() {
       <Header />
 
       <section className="relative flex h-screen flex-col items-center justify-center px-6 text-center">
-        <Link
-          href="/"
-          className="absolute left-6 top-6 inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1.5 text-sm text-muted transition-colors hover:text-foreground"
-        >
-          <ArrowLeft size={14} />
-          Home
-        </Link>
+        <div className="absolute left-6 top-6">
+          <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "CMAT" }]} />
+        </div>
 
         <div className="flex flex-col items-center gap-4">
           <span className="flex h-14 w-14 items-center justify-center rounded-full bg-accent/15 text-accent">

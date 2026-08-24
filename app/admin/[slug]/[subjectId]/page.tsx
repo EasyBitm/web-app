@@ -1,8 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { use, useEffect, useState } from "react";
-import { ArrowLeft, Trash2, Upload } from "lucide-react";
+import { Trash2, Upload } from "lucide-react";
+import Breadcrumbs from "../../../../src/components/Breadcrumbs";
 import {
   createLesson,
   createResource,
@@ -131,25 +131,27 @@ export default function AdminSubjectPage({
     return (
       <div className="mx-auto w-full max-w-4xl px-6 py-16">
         <p className="text-sm text-muted">Subject not found.</p>
-        <Link
-          href={`/admin/${slug}`}
-          className="mt-4 inline-block text-sm text-accent"
-        >
-          Back to Semester
-        </Link>
+        <div className="mt-4">
+          <Breadcrumbs
+            items={[
+              { label: "Admin", href: "/admin" },
+              { label: slug, href: `/admin/${slug}` },
+            ]}
+          />
+        </div>
       </div>
     );
   }
 
   return (
     <div className="mx-auto w-full max-w-4xl px-6 py-16">
-      <Link
-        href={`/admin/${slug}`}
-        className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1.5 text-sm text-muted transition-colors hover:text-foreground"
-      >
-        <ArrowLeft size={14} />
-        {slug}
-      </Link>
+      <Breadcrumbs
+        items={[
+          { label: "Admin", href: "/admin" },
+          { label: slug, href: `/admin/${slug}` },
+          { label: subject.name },
+        ]}
+      />
 
       <h1 className="mt-6 text-3xl font-bold tracking-tight">
         {subject.name}

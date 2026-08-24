@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, BookOpen, Layers } from "lucide-react";
+import { BookOpen, Layers } from "lucide-react";
 import Header from "../../../src/components/Header";
 import Footer from "../../../src/components/Footer";
+import Breadcrumbs from "../../../src/components/Breadcrumbs";
 import { getSemester, getSemesters, type Difficulty } from "../../../src/lib/data";
 
 export const dynamic = "force-dynamic";
@@ -33,13 +34,12 @@ export default async function SemesterPage({
       <Header />
 
       <section className="mx-auto w-full max-w-4xl px-6 py-16">
-        <Link
-          href="/#semesters"
-          className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1.5 text-sm text-muted transition-colors hover:text-foreground"
-        >
-          <ArrowLeft size={14} />
-          All Semesters
-        </Link>
+        <Breadcrumbs
+          items={[
+            { label: "Home", href: "/" },
+            { label: semester.name },
+          ]}
+        />
 
         <h1 className="mt-6 text-3xl font-bold tracking-tight">
           {semester.name}
@@ -75,7 +75,7 @@ export default async function SemesterPage({
 
               <div className="mt-4 flex items-center justify-between">
                 <Link
-                  href={`/subject/${subject.id}`}
+                  href={`/semester/${slug}/${subject.id}`}
                   className="rounded-full border border-border px-4 py-1.5 text-sm font-medium transition-colors hover:bg-surface-2"
                 >
                   Learn

@@ -1,10 +1,15 @@
 import Image from "next/image";
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, FileText, ListChecks, Video, ImageIcon } from "lucide-react";
-import Header from "../../../src/components/Header";
-import Footer from "../../../src/components/Footer";
-import { getSubject, type Resource, type ResourceKind } from "../../../src/lib/data";
+import { FileText, ListChecks, Video, ImageIcon } from "lucide-react";
+import Header from "../../../../src/components/Header";
+import Footer from "../../../../src/components/Footer";
+import Breadcrumbs from "../../../../src/components/Breadcrumbs";
+import {
+  getSemester,
+  getSubject,
+  type Resource,
+  type ResourceKind,
+} from "../../../../src/lib/data";
 
 export const dynamic = "force-dynamic";
 
@@ -38,10 +43,13 @@ function groupByLesson(items: Resource[]) {
 export default async function SubjectPage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ slug: string; subjectId: string }>;
 }) {
-  const { id } = await params;
-  const subject = await getSubject(id);
+  const { slug, subjectId } = await params;
+  const [subject, semester] = await Promise.all([
+    getSubject(subjectId),
+    getSemester(slug),
+  ]);
 
   if (!subject) {
     notFound();
@@ -59,13 +67,13 @@ export default async function SubjectPage({
       <Header />
 
       <section className="mx-auto w-full max-w-3xl px-6 py-16">
-        <Link
-          href={`/semester/${subject.semester_slug}`}
-          className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1.5 text-sm text-muted transition-colors hover:text-foreground"
-        >
-          <ArrowLeft size={14} />
-          Back
-        </Link>
+        <Breadcrumbs
+          items={[
+            { label: "Home", href: "/" },
+            { label: semester?.name ?? slug, href: `/semester/${slug}` },
+            { label: subject.name },
+          ]}
+        />
 
         <h1 className="mt-6 text-3xl font-bold tracking-tight">
           {subject.name}

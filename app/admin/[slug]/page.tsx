@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { use, useEffect, useState } from "react";
-import { ArrowLeft, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
+import Breadcrumbs from "../../../src/components/Breadcrumbs";
 import {
   createSubject,
   deleteSubject,
@@ -85,22 +86,18 @@ export default function AdminSemesterPage({
     return (
       <div className="mx-auto w-full max-w-4xl px-6 py-16">
         <p className="text-sm text-muted">Semester not found.</p>
-        <Link href="/admin" className="mt-4 inline-block text-sm text-accent">
-          Back to Admin
-        </Link>
+        <div className="mt-4">
+          <Breadcrumbs items={[{ label: "Admin", href: "/admin" }]} />
+        </div>
       </div>
     );
   }
 
   return (
     <div className="mx-auto w-full max-w-4xl px-6 py-16">
-      <Link
-        href="/admin"
-        className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1.5 text-sm text-muted transition-colors hover:text-foreground"
-      >
-        <ArrowLeft size={14} />
-        Admin
-      </Link>
+      <Breadcrumbs
+        items={[{ label: "Admin", href: "/admin" }, { label: semester.name }]}
+      />
 
       <input
         defaultValue={semester.name}
