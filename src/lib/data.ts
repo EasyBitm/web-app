@@ -25,8 +25,17 @@ export type Subject = {
   sort_order: number;
 };
 
+export type Lesson = {
+  id: string;
+  subject_id: string;
+  title: string;
+  hours: number | null;
+  sort_order: number;
+};
+
 export type SubjectWithResources = Subject & {
   resources: Resource[];
+  lessons: Lesson[];
   semester_slug: string;
 };
 
@@ -168,6 +177,14 @@ export async function getSubject(
 
   if (resError) throw resError;
 
+  const { data: lessons, error: lessonError } = await supabase
+    .from("lessons")
+    .select("*")
+    .eq("subject_id", id)
+    .order("sort_order", { ascending: true });
+
+  if (lessonError) throw lessonError;
+
   const { semesters, ...rest } = subject as typeof subject & {
     semesters: { slug: string } | null;
   };
@@ -176,7 +193,35 @@ export async function getSubject(
     ...rest,
     semester_slug: semesters?.slug ?? "",
     resources: resources ?? [],
+    lessons: lessons ?? [],
   };
+}
+
+export async function createLesson(input: {
+  subject_id: string;
+  title: string;
+  hours?: number | null;
+  sort_order: number;
+}) {
+  const { error } = await supabase.from("lessons").insert(input);
+  if (error) throw error;
+}
+
+export async function updateLesson(
+  id: string,
+  input: Partial<{
+    title: string;
+    hours: number | null;
+    sort_order: number;
+  }>,
+) {
+  const { error } = await supabase.from("lessons").update(input).eq("id", id);
+  if (error) throw error;
+}
+
+export async function deleteLesson(id: string) {
+  const { error } = await supabase.from("lessons").delete().eq("id", id);
+  if (error) throw error;
 }
 
 export async function createResource(input: {

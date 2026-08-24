@@ -74,6 +74,33 @@ export default async function SubjectPage({
           {subject.code} · {subject.chapters} chapters
         </p>
 
+        {subject.lessons.length > 0 && (
+          <div className="mt-8">
+            <div className="flex items-center gap-2 text-sm font-medium text-muted">
+              <ListChecks size={16} />
+              Course Outline
+            </div>
+            <ol className="mt-3 flex flex-col gap-2">
+              {subject.lessons.map((lesson, i) => (
+                <li
+                  key={lesson.id}
+                  className="flex items-center justify-between gap-3 rounded-xl border border-border bg-surface px-4 py-3 text-sm"
+                >
+                  <span>
+                    <span className="text-muted">{i + 1}. </span>
+                    {lesson.title}
+                  </span>
+                  {lesson.hours != null && (
+                    <span className="shrink-0 text-xs text-muted">
+                      {lesson.hours} LHs
+                    </span>
+                  )}
+                </li>
+              ))}
+            </ol>
+          </div>
+        )}
+
         <div className="mt-10 flex flex-col gap-8">
           {groups.length === 0 && (
             <div className="text-sm text-muted">

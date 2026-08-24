@@ -4,9 +4,12 @@ import Link from "next/link";
 import { use, useEffect, useState } from "react";
 import { ArrowLeft, Trash2, Upload } from "lucide-react";
 import {
+  createLesson,
   createResource,
+  deleteLesson,
   deleteResource,
   getSubject,
+  updateLesson,
   updateResource,
   type ResourceKind,
   type SubjectWithResources,
@@ -37,6 +40,8 @@ export default function AdminSubjectPage({
   const [kind, setKind] = useState<ResourceKind>("notes");
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [lessonTitle, setLessonTitle] = useState("");
+  const [lessonHours, setLessonHours] = useState("");
 
   async function handleFile(file: File | undefined) {
     if (!file) return;
@@ -92,6 +97,28 @@ export default function AdminSubjectPage({
     load();
   }
 
+  async function handleAddLesson(e: React.FormEvent) {
+    e.preventDefault();
+    if (!subject || !lessonTitle.trim()) return;
+    setSaving(true);
+    await createLesson({
+      subject_id: subject.id,
+      title: lessonTitle.trim(),
+      hours: lessonHours.trim() ? Number(lessonHours) : null,
+      sort_order: subject.lessons.length + 1,
+    });
+    setLessonTitle("");
+    setLessonHours("");
+    setSaving(false);
+    load();
+  }
+
+  async function handleDeleteLesson(id: string) {
+    if (!confirm("Delete this lesson?")) return;
+    await deleteLesson(id);
+    load();
+  }
+
   if (loading) {
     return (
       <div className="mx-auto w-full max-w-4xl px-6 py-16 text-sm text-muted">
@@ -131,9 +158,79 @@ export default function AdminSubjectPage({
         {subject.code} · Manage notes, syllabus, videos, and question papers.
       </p>
 
+      <h2 className="mt-10 text-lg font-semibold">Course Outline (Lessons)</h2>
+      <form
+        onSubmit={handleAddLesson}
+        className="mt-3 grid grid-cols-1 gap-2 rounded-xl border border-border bg-surface p-4 sm:grid-cols-6"
+      >
+        <input
+          value={lessonTitle}
+          onChange={(e) => setLessonTitle(e.target.value)}
+          placeholder="Unit title (e.g. Unit 1: Computer Fundamentals)"
+          className="rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:border-accent sm:col-span-4"
+        />
+        <input
+          type="number"
+          value={lessonHours}
+          onChange={(e) => setLessonHours(e.target.value)}
+          placeholder="Hours (LHs)"
+          className="rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:border-accent sm:col-span-1"
+        />
+        <button
+          type="submit"
+          disabled={saving}
+          className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent/90 disabled:opacity-50 sm:col-span-1"
+        >
+          Add Unit
+        </button>
+      </form>
+
+      <div className="mt-3 flex flex-col gap-2">
+        {subject.lessons.length === 0 && (
+          <div className="text-sm text-muted">No units added yet.</div>
+        )}
+        {subject.lessons.map((lesson, i) => (
+          <div
+            key={lesson.id}
+            className="flex items-center gap-3 rounded-xl border border-border bg-surface p-3"
+          >
+            <span className="text-sm text-muted">{i + 1}.</span>
+            <input
+              defaultValue={lesson.title}
+              onBlur={(e) => {
+                if (e.target.value !== lesson.title)
+                  updateLesson(lesson.id, { title: e.target.value }).then(
+                    load,
+                  );
+              }}
+              className="flex-1 rounded-lg border border-transparent bg-transparent px-1 py-1 text-sm font-medium outline-none focus:border-border focus:bg-background"
+            />
+            <input
+              type="number"
+              defaultValue={lesson.hours ?? ""}
+              onBlur={(e) => {
+                const val = e.target.value ? Number(e.target.value) : null;
+                if (val !== lesson.hours)
+                  updateLesson(lesson.id, { hours: val }).then(load);
+              }}
+              placeholder="LHs"
+              className="w-16 rounded-lg border border-transparent bg-transparent px-1 py-1 text-xs text-muted outline-none focus:border-border focus:bg-background"
+            />
+            <button
+              onClick={() => handleDeleteLesson(lesson.id)}
+              aria-label="Delete unit"
+              className="flex h-8 w-8 items-center justify-center rounded-full text-muted transition-colors hover:bg-red-500/10 hover:text-red-500"
+            >
+              <Trash2 size={16} />
+            </button>
+          </div>
+        ))}
+      </div>
+
+      <h2 className="mt-10 text-lg font-semibold">Resources</h2>
       <form
         onSubmit={handleAdd}
-        className="mt-8 grid grid-cols-1 gap-2 rounded-xl border border-border bg-surface p-4 sm:grid-cols-6"
+        className="mt-3 grid grid-cols-1 gap-2 rounded-xl border border-border bg-surface p-4 sm:grid-cols-6"
       >
         <select
           value={kind}
