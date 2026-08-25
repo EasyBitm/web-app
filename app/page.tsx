@@ -24,10 +24,10 @@ export default async function Home() {
         <div className="flex flex-col gap-6">
           <h1 className="text-4xl font-bold leading-tight tracking-tight sm:text-5xl">
             Your <span className="text-accent">simple</span> guide to
-            mastering every semester
+            master every semester exam.
           </h1>
           <p className="max-w-md text-muted">
-            Notes, guides, and resources organized by semester so you can
+            Notes, guides, and organized resources so you can
             focus on learning instead of hunting for materials.
           </p>
 
