@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { FileText, ListChecks, Video, ImageIcon, type LucideIcon } from "lucide-react";
+import { FileText, ListChecks, Video, ImageIcon, Play, type LucideIcon } from "lucide-react";
 import type { Lesson, Resource, ResourceKind } from "../lib/data";
 
 type TabKind = ResourceKind | "lessons";
@@ -25,6 +25,13 @@ function groupByYear(items: Resource[]) {
     year,
     items: items.filter((r) => (r.year ?? 0) === year),
   }));
+}
+
+function getYoutubeThumbnail(url: string) {
+  const match = url.match(
+    /(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{11})/,
+  );
+  return match ? `https://i.ytimg.com/vi/${match[1]}/hqdefault.jpg` : null;
 }
 
 function groupByLesson(items: Resource[]) {
@@ -137,6 +144,52 @@ export default function SubjectTabs({
                       </div>
                     </a>
                   ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : active === "video" ? (
+          <div className="flex flex-col gap-6">
+            {groupByLesson(items).map(({ lesson, items: lessonItems }) => (
+              <div key={lesson}>
+                <div className="text-xs font-medium text-muted">
+                  {lesson ? `Lesson ${lesson}` : "Lesson unspecified"}
+                </div>
+                <div className="mt-2 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  {lessonItems.map((item) => {
+                    const thumbnail = getYoutubeThumbnail(item.url);
+                    return (
+                      <a
+                        key={item.id}
+                        href={item.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group overflow-hidden rounded-xl border border-border bg-surface"
+                      >
+                        <div className="relative aspect-video w-full bg-surface-2">
+                          {thumbnail ? (
+                            <Image
+                              src={thumbnail}
+                              alt={item.title}
+                              fill
+                              className="object-cover transition-transform group-hover:scale-105"
+                              unoptimized
+                            />
+                          ) : (
+                            <div className="flex h-full w-full items-center justify-center">
+                              <Video size={24} className="text-muted" />
+                            </div>
+                          )}
+                          <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 transition-opacity group-hover:opacity-100">
+                            <Play size={28} className="fill-white text-white" />
+                          </div>
+                        </div>
+                        <div className="px-3 py-2 text-sm font-medium">
+                          {item.title}
+                        </div>
+                      </a>
+                    );
+                  })}
                 </div>
               </div>
             ))}

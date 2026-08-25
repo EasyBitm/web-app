@@ -72,7 +72,7 @@ export default function AdminSubjectPage({
     e.preventDefault();
     if (!subject || !title.trim() || !url.trim()) return;
     if (kind === "question_paper" && !year.trim()) return;
-    if (kind === "notes" && !lesson.trim()) return;
+    if ((kind === "notes" || kind === "video") && !lesson.trim()) return;
     setSaving(true);
     await createResource({
       subject_id: subject.id,
@@ -80,7 +80,7 @@ export default function AdminSubjectPage({
       title: title.trim(),
       url: url.trim(),
       year: kind === "question_paper" ? Number(year) : null,
-      lesson: kind === "notes" ? Number(lesson) : null,
+      lesson: kind === "notes" || kind === "video" ? Number(lesson) : null,
       sort_order: subject.resources.length + 1,
     });
     setTitle("");
@@ -266,7 +266,7 @@ export default function AdminSubjectPage({
             className="rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:border-accent"
           />
         )}
-        {kind === "notes" && (
+        {(kind === "notes" || kind === "video") && (
           <input
             type="number"
             min={1}
@@ -288,7 +288,7 @@ export default function AdminSubjectPage({
           }
           disabled={uploading}
           className={`rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:border-accent disabled:opacity-50 ${
-            kind === "question_paper" || kind === "notes"
+            kind === "question_paper" || kind === "notes" || kind === "video"
               ? "sm:col-span-1"
               : "sm:col-span-2"
           }`}
@@ -367,7 +367,7 @@ export default function AdminSubjectPage({
                   className="rounded-lg border border-transparent bg-transparent px-1 py-1 text-xs text-muted outline-none focus:border-border focus:bg-background sm:w-16"
                 />
               )}
-              {resource.kind === "notes" && (
+              {(resource.kind === "notes" || resource.kind === "video") && (
                 <input
                   type="number"
                   min={1}
