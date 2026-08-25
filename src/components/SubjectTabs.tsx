@@ -3,11 +3,14 @@
 import Image from "next/image";
 import { useState } from "react";
 import { FileText, ListChecks, Video, ImageIcon, type LucideIcon } from "lucide-react";
-import type { Resource, ResourceKind } from "../lib/data";
+import type { Lesson, Resource, ResourceKind } from "../lib/data";
 
-const tabOrder: ResourceKind[] = ["video", "notes", "syllabus", "question_paper"];
+type TabKind = ResourceKind | "lessons";
 
-const kindMeta: Record<ResourceKind, { label: string; icon: LucideIcon }> = {
+const tabOrder: TabKind[] = ["lessons", "video", "notes", "syllabus", "question_paper"];
+
+const kindMeta: Record<TabKind, { label: string; icon: LucideIcon }> = {
+  lessons: { label: "Lessons", icon: ListChecks },
   video: { label: "Videos", icon: Video },
   notes: { label: "Notes", icon: FileText },
   syllabus: { label: "Syllabus", icon: ListChecks },
@@ -36,41 +39,41 @@ function groupByLesson(items: Resource[]) {
 
 export default function SubjectTabs({
   groups,
+  lessons = [],
 }: {
   groups: { kind: ResourceKind; items: Resource[] }[];
+  lessons?: Lesson[];
 }) {
   const availableKinds = tabOrder.filter((kind) =>
-    groups.some((g) => g.kind === kind),
+    kind === "lessons"
+      ? lessons.length > 0
+      : groups.some((g) => g.kind === kind),
   );
-  const [active, setActive] = useState<ResourceKind | null>(
+  const [active, setActive] = useState<TabKind | null>(
     availableKinds[0] ?? null,
   );
-
-  if (availableKinds.length === 0) {
-    return (
-      <div className="mt-10 text-sm text-muted">
-        No resources added for this subject yet.
-      </div>
-    );
-  }
 
   const items = groups.find((g) => g.kind === active)?.items ?? [];
 
   return (
     <div className="mt-8">
-      <div className="flex items-center gap-8">
-        {availableKinds.map((kind) => {
+      <div className="flex items-center gap-8 lg:fixed lg:left-8 lg:top-1/2 lg:mt-0 lg:z-10 lg:flex-col lg:items-start lg:gap-4 lg:-translate-y-1/2">
+        {tabOrder.map((kind) => {
           const { label, icon: Icon } = kindMeta[kind];
+          const isAvailable = availableKinds.includes(kind);
           const isActive = kind === active;
           return (
             <button
               key={kind}
               type="button"
+              disabled={!isAvailable}
               onClick={() => setActive(kind)}
               className={`flex items-center gap-1.5 border-b-2 pb-3 text-sm font-medium transition-colors ${
                 isActive
                   ? "border-accent text-accent"
-                  : "border-transparent text-muted hover:text-foreground"
+                  : isAvailable
+                    ? "border-transparent text-muted hover:text-foreground"
+                    : "border-transparent text-muted/40 cursor-not-allowed"
               }`}
             >
               <Icon size={16} />
@@ -81,7 +84,30 @@ export default function SubjectTabs({
       </div>
 
       <div className="mt-6">
-        {active === "question_paper" ? (
+        {availableKinds.length === 0 ? (
+          <div className="text-sm text-muted">
+            No resources added for this subject yet.
+          </div>
+        ) : active === "lessons" ? (
+          <ol className="flex flex-col gap-2">
+            {lessons.map((lesson, i) => (
+              <li
+                key={lesson.id}
+                className="flex items-center justify-between gap-3 rounded-xl border border-border bg-surface px-4 py-3 text-sm"
+              >
+                <span>
+                  <span className="text-muted">{i + 1}. </span>
+                  {lesson.title}
+                </span>
+                {lesson.hours != null && (
+                  <span className="shrink-0 text-xs text-muted">
+                    {lesson.hours} LHs
+                  </span>
+                )}
+              </li>
+            ))}
+          </ol>
+        ) : active === "question_paper" ? (
           <div className="flex flex-col gap-6">
             {groupByYear(items).map(({ year, items: yearItems }) => (
               <div key={year}>

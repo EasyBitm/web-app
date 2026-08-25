@@ -1,5 +1,4 @@
 import { notFound } from "next/navigation";
-import { ListChecks } from "lucide-react";
 import Header from "../../../../src/components/Header";
 import Footer from "../../../../src/components/Footer";
 import Breadcrumbs from "../../../../src/components/Breadcrumbs";
@@ -47,7 +46,7 @@ export default async function SubjectPage({
     <div className="flex flex-col flex-1">
       <Header />
 
-      <section className="mx-auto w-full max-w-3xl px-6 py-16">
+      <section className="mx-auto min-h-screen w-full max-w-5xl px-6 py-4">
         <Breadcrumbs
           items={[
             { label: "Home", href: "/" },
@@ -59,7 +58,7 @@ export default async function SubjectPage({
         <p className="mt-6 text-xs font-medium uppercase tracking-wide text-muted">
           {subject.code}
         </p>
-        <h1 className="mt-1 text-3xl font-bold tracking-tight">
+        <h1 className="mt-1 text-2xl font-bold tracking-tight">
           {subject.name}
         </h1>
         <div className="mt-3 flex items-center gap-3">
@@ -73,34 +72,7 @@ export default async function SubjectPage({
           </span>
         </div>
 
-        {subject.lessons.length > 0 && (
-          <div className="mt-8">
-            <div className="flex items-center gap-2 text-sm font-medium text-muted">
-              <ListChecks size={16} />
-              Course Outline
-            </div>
-            <ol className="mt-3 flex flex-col gap-2">
-              {subject.lessons.map((lesson, i) => (
-                <li
-                  key={lesson.id}
-                  className="flex items-center justify-between gap-3 rounded-xl border border-border bg-surface px-4 py-3 text-sm"
-                >
-                  <span>
-                    <span className="text-muted">{i + 1}. </span>
-                    {lesson.title}
-                  </span>
-                  {lesson.hours != null && (
-                    <span className="shrink-0 text-xs text-muted">
-                      {lesson.hours} LHs
-                    </span>
-                  )}
-                </li>
-              ))}
-            </ol>
-          </div>
-        )}
-
-        <SubjectTabs groups={groups} />
+        <SubjectTabs groups={groups} lessons={subject.lessons} />
       </section>
 
       <Footer />
