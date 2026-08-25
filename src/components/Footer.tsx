@@ -2,7 +2,7 @@ import Image from "next/image";
 
 const footerLinks = {
   Explore: ["Semesters", "Notices", "Why Us"],
-  Company: ["About", "Team", "Feedback"],
+   Info: ["About us", "Team", "Credits"],
 };
 
 export default function Footer() {

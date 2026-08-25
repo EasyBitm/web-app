@@ -1,4 +1,4 @@
-import Image from "next/image";
+// import Image from "next/image";
 import Link from "next/link";
 import Header from "../src/components/Header";
 import Footer from "../src/components/Footer";
@@ -12,7 +12,7 @@ export default async function Home() {
 
   const stats = [
     { label: "Semesters Covered", value: `${semesters.length || 8}` },
-    { label: "Subjects Listed", value: `${totalSubjects}+` },
+    // { label: "Subjects Listed", value: `${totalSubjects}+` },
     { label: "Cost to Use", value: "Free" },
   ];
 
@@ -50,34 +50,34 @@ export default async function Home() {
             >
               Start Learning
             </a>
-            {/* <a
+            <a
               href="#contact"
               className="rounded-full border border-border px-6 py-3 text-sm font-medium transition-colors hover:bg-surface"
             >
               Contribute
-            </a> */}
+            </a>
           </div>
         </div>
 
         <div className="mx-auto flex w-full max-w-md flex-col items-center gap-6 text-center">
-          <Image
+          {/* <Image
             src="/TU-LOGO.png"
             alt="Tribhuvan University Logo"
             width={220}
             height={220}
             className="h-40 w-40 object-contain sm:h-56 sm:w-56"
             priority
-          />
+          /> */}
           <p className="text-sm font-semibold leading-snug md:text-lg">
-            Bachelor of <span className="text-accent">Information Technology Management</span>
+            “All power is within you; <br /> you can do anything and everything.”
             <br />
-            <span className="text-muted">(Tribhuvan University, Nepal)</span>
+            <span className="text-muted">— Swami Vivekananda</span>
           </p>
         </div>
       </section>
 
       <section id="semesters" className="mx-auto w-full max-w-6xl px-6 py-16">
-        <h2 className="text-2xl font-semibold">Start Learning</h2>
+        <h2 className="text-2xl font-semibold">Semesters</h2>
         <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {semesters.map((s) => (
             <Link
@@ -105,12 +105,12 @@ export default async function Home() {
             Why <span className="text-accent">easy</span>BITM?
           </h2>
           <p className="mt-3 text-muted">
-            Everything organized in one place, updated by the community, and
+            Everything organized in one place, updated, and
             free to use.
           </p>
           <div className="mt-10 grid grid-cols-1 gap-6 text-left sm:grid-cols-3">
             <div className="rounded-xl border border-border bg-surface p-5">
-              <div className="font-medium">Organized by Semester</div>
+              <div className="font-medium">Organized</div>
               <p className="mt-2 text-sm text-muted">
                 Find exactly what you need without digging through folders.
               </p>

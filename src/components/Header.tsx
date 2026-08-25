@@ -163,13 +163,13 @@ export default function Header() {
           >
             Notices
           </Link>
-          {/* <a
-            href="#why"
+          <a
+            href="#"
             className="text-sm font-medium text-muted hover:text-foreground"
           >
-            Why Us
+            Support Us
           </a>
-          <a
+          {/* <a
             href="#contact"
             className="text-sm font-medium text-muted hover:text-foreground"
           >

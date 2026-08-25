@@ -62,9 +62,14 @@ export default function SubjectTabs({
 
   const items = groups.find((g) => g.kind === active)?.items ?? [];
 
+  const syllabusItems = groups.find((g) => g.kind === "syllabus")?.items ?? [];
+  const [syllabusId, setSyllabusId] = useState<string | null>(null);
+  const activeSyllabus =
+    syllabusItems.find((item) => item.id === syllabusId) ?? syllabusItems[0];
+
   return (
     <div className="mt-8">
-      <div className="flex items-center gap-8 lg:fixed lg:left-8 lg:top-1/2 lg:mt-0 lg:z-10 lg:flex-col lg:items-start lg:gap-4 lg:-translate-y-1/2">
+      <div className="flex items-center gap-12 lg:fixed lg:left-8 lg:top-1/2 lg:mt-0 lg:z-10 lg:flex-col lg:items-start lg:gap-8 lg:-translate-y-1/2">
         {tabOrder.map((kind) => {
           const { label, icon: Icon } = kindMeta[kind];
           const isAvailable = availableKinds.includes(kind);
@@ -217,6 +222,51 @@ export default function SubjectTabs({
               </div>
             ))}
           </div>
+        ) : active === "syllabus" ? (
+          activeSyllabus ? (
+            <div className="flex flex-col gap-3">
+              {/* {syllabusItems.length > 1 && (
+                <div className="flex flex-wrap gap-2">
+                  {syllabusItems.map((item) => (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => setSyllabusId(item.id)}
+                      className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+                        item.id === activeSyllabus.id
+                          ? "bg-accent text-white"
+                          : "bg-surface text-muted hover:text-foreground"
+                      }`}
+                    >
+                      {item.title}
+                    </button>
+                  ))}
+                </div>
+              )} */}
+              {/* <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">
+                  {activeSyllabus.title}
+                </span>
+                <a
+                  href={activeSyllabus.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-muted hover:text-foreground"
+                >
+                  Open in new tab
+                </a>
+              </div> */}
+              <iframe
+                src={`${activeSyllabus.url}#toolbar=1`}
+                title={activeSyllabus.title}
+                className="h-[75vh] w-full rounded-xl border border-border bg-surface"
+              />
+            </div>
+          ) : (
+            <div className="text-sm text-muted">
+              No syllabus added for this subject yet.
+            </div>
+          )
         ) : (
           <div className="flex flex-col gap-2">
             {items.map((item) => (

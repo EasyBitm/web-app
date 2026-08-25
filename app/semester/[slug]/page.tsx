@@ -33,7 +33,7 @@ export default async function SemesterPage({
     <div className="flex flex-col flex-1">
       <Header />
 
-      <section className="mx-auto w-full max-w-4xl px-6 py-16">
+      <section className="mx-auto min-h-screen w-full max-w-5xl px-6 py-4">
         <Breadcrumbs
           items={[
             { label: "Home", href: "/" },
