@@ -7,11 +7,15 @@ import { getSemesters } from "../src/lib/data";
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const semesters = await getSemesters();
-  const totalSubjects = semesters.reduce((sum, s) => sum + s.subjects.length, 0);
+  const semesters = await getSemesters({ includeHidden: true });
+  const visibleSemesters = semesters.filter((s) => s.is_visible);
+  const totalSubjects = visibleSemesters.reduce(
+    (sum, s) => sum + s.subjects.length,
+    0,
+  );
 
   const stats = [
-    { label: "Semesters Covered", value: `${semesters.length || 8}` },
+    { label: "Semesters Covered", value: `${visibleSemesters.length || 8}` },
     // { label: "Subjects Listed", value: `${totalSubjects}+` },
     { label: "Cost to Use", value: "Free" },
   ];
@@ -76,25 +80,41 @@ export default async function Home() {
         </div>
       </section>
 
-      <section id="semesters" className="mx-auto w-full max-w-6xl px-6 py-16">
-        <h2 className="text-2xl font-semibold">Semesters</h2>
+      <section id="semesters" className="mx-auto h-screen w-full max-w-6xl px-6 py-16">
+        <h2 className="text-2xl mt-10 font-semibold">Semesters</h2>
         <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {semesters.map((s) => (
-            <Link
-              key={s.slug}
-              href={`/semester/${s.slug}`}
-              className="flex items-center justify-between rounded-xl border border-border bg-surface px-5 py-4 transition-colors hover:bg-surface-2"
-            >
-              <div>
-                <div className="font-medium">{s.name}</div>
-                <div className="text-sm text-muted">
-                  {s.subjects.length} subjects
+            s.is_visible ? (
+              <Link
+                key={s.slug}
+                href={`/semester/${s.slug}`}
+                className="flex min-h-32 items-center justify-between rounded-xl border border-border bg-surface px-6 py-6 transition-colors hover:bg-surface-2"
+              >
+                <div>
+                  <div className="text-lg font-medium">{s.name}</div>
+                  <div className="text-sm text-muted">
+                    {s.subjects.length} subjects
+                  </div>
                 </div>
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-surface-2 text-muted">
+                  &rsaquo;
+                </span>
+              </Link>
+            ) : (
+              <div
+                key={s.slug}
+                aria-disabled="true"
+                className="flex min-h-32 cursor-not-allowed items-center justify-between rounded-xl border border-border bg-surface px-6 py-6 opacity-50"
+              >
+                <div>
+                  <div className="text-lg font-medium">{s.name}</div>
+                  <div className="text-sm text-muted">Coming soon</div>
+                </div>
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-surface-2 text-muted">
+                  &ndash;
+                </span>
               </div>
-              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-surface-2 text-muted">
-                &rsaquo;
-              </span>
-            </Link>
+            )
           ))}
         </div>
       </section>

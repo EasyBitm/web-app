@@ -2,12 +2,20 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { FileText, ListChecks, Video, ImageIcon, Play, type LucideIcon } from "lucide-react";
+import {
+  FileText,
+  ListChecks,
+  Video,
+  ImageIcon,
+  Play,
+  X,
+  type LucideIcon,
+} from "lucide-react";
 import type { Lesson, Resource, ResourceKind } from "../lib/data";
 
 type TabKind = ResourceKind | "lessons";
 
-const tabOrder: TabKind[] = ["lessons", "video", "notes", "syllabus", "question_paper"];
+const tabOrder: TabKind[] = ["lessons", "notes", "syllabus", "question_paper"];
 
 const kindMeta: Record<TabKind, { label: string; icon: LucideIcon }> = {
   lessons: { label: "Lessons", icon: ListChecks },
@@ -32,6 +40,15 @@ function getYoutubeThumbnail(url: string) {
     /(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{11})/,
   );
   return match ? `https://i.ytimg.com/vi/${match[1]}/hqdefault.jpg` : null;
+}
+
+function getVideoEmbedUrl(url: string) {
+  const match = url.match(
+    /(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{11})/,
+  );
+  return match
+    ? `https://www.youtube.com/embed/${match[1]}?autoplay=1&controls=1&fs=1&iv_load_policy=3&modestbranding=1&rel=0`
+    : url;
 }
 
 function groupByLesson(items: Resource[]) {
@@ -59,8 +76,12 @@ export default function SubjectTabs({
   const [active, setActive] = useState<TabKind | null>(
     availableKinds[0] ?? null,
   );
+  const [expandedLessonId, setExpandedLessonId] = useState<string | null>(null);
+  const [hoveredLessonId, setHoveredLessonId] = useState<string | null>(null);
+  const [selectedVideo, setSelectedVideo] = useState<Resource | null>(null);
 
   const items = groups.find((g) => g.kind === active)?.items ?? [];
+  const videoItems = groups.find((g) => g.kind === "video")?.items ?? [];
 
   const syllabusItems = groups.find((g) => g.kind === "syllabus")?.items ?? [];
   const [syllabusId, setSyllabusId] = useState<string | null>(null);
@@ -105,16 +126,88 @@ export default function SubjectTabs({
             {lessons.map((lesson, i) => (
               <li
                 key={lesson.id}
-                className="flex items-center justify-between gap-3 rounded-xl border border-border bg-surface px-4 py-3 text-sm"
+                onMouseEnter={() => setHoveredLessonId(lesson.id)}
+                onMouseLeave={() => setHoveredLessonId(null)}
+                className="rounded-xl border border-border bg-surface text-sm"
               >
-                <span>
-                  <span className="text-muted">{i + 1}. </span>
-                  {lesson.title}
-                </span>
-                {lesson.hours != null && (
-                  <span className="shrink-0 text-xs text-muted">
-                    {lesson.hours} LHs
+                <button
+                  type="button"
+                  onClick={() =>
+                    setExpandedLessonId(
+                      expandedLessonId === lesson.id ? null : lesson.id,
+                    )
+                  }
+                  className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left"
+                  aria-expanded={expandedLessonId === lesson.id}
+                >
+                  <span>
+                    <span className="text-muted">{i + 1}. </span>
+                    {lesson.title}
                   </span>
+                  <span className="flex shrink-0 items-center gap-3">
+                    {lesson.hours != null && (
+                      <span className="text-xs text-muted">
+                        {lesson.hours} LHs
+                      </span>
+                    )}
+                    <span className="text-lg text-muted">
+                      {expandedLessonId === lesson.id ? "−" : "+"}
+                    </span>
+                  </span>
+                </button>
+
+                {(expandedLessonId === lesson.id || hoveredLessonId === lesson.id) && (
+                  <div className="border-t border-border px-4 py-4">
+                    {videoItems.filter((item) => (item.lesson ?? 0) === i + 1)
+                      .length > 0 ? (
+                      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                        {videoItems
+                          .filter((item) => (item.lesson ?? 0) === i + 1)
+                          .map((item) => {
+                            const thumbnail = getYoutubeThumbnail(item.url);
+                            return (
+                              <a
+                                key={item.id}
+                                href={item.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={(event) => {
+                                  event.preventDefault();
+                                  setSelectedVideo(item);
+                                }}
+                                className="group overflow-hidden rounded-xl border border-border bg-surface-2"
+                              >
+                                <div className="relative aspect-video w-full bg-surface">
+                                  {thumbnail ? (
+                                    <Image
+                                      src={thumbnail}
+                                      alt={item.title}
+                                      fill
+                                      className="object-cover transition-transform group-hover:scale-105"
+                                      unoptimized
+                                    />
+                                  ) : (
+                                    <div className="flex h-full w-full items-center justify-center">
+                                      <Video size={24} className="text-muted" />
+                                    </div>
+                                  )}
+                                  <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 transition-opacity group-hover:opacity-100">
+                                    <Play size={28} className="fill-white text-white" />
+                                  </div>
+                                </div>
+                                <div className="px-3 py-2 text-sm font-medium">
+                                  {item.title}
+                                </div>
+                              </a>
+                            );
+                          })}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-muted">
+                        No videos added for this lesson yet.
+                      </p>
+                    )}
+                  </div>
                 )}
               </li>
             ))}
@@ -149,52 +242,6 @@ export default function SubjectTabs({
                       </div>
                     </a>
                   ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : active === "video" ? (
-          <div className="flex flex-col gap-6">
-            {groupByLesson(items).map(({ lesson, items: lessonItems }) => (
-              <div key={lesson}>
-                <div className="text-xs font-medium text-muted">
-                  {lesson ? `Lesson ${lesson}` : "Lesson unspecified"}
-                </div>
-                <div className="mt-2 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  {lessonItems.map((item) => {
-                    const thumbnail = getYoutubeThumbnail(item.url);
-                    return (
-                      <a
-                        key={item.id}
-                        href={item.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="group overflow-hidden rounded-xl border border-border bg-surface"
-                      >
-                        <div className="relative aspect-video w-full bg-surface-2">
-                          {thumbnail ? (
-                            <Image
-                              src={thumbnail}
-                              alt={item.title}
-                              fill
-                              className="object-cover transition-transform group-hover:scale-105"
-                              unoptimized
-                            />
-                          ) : (
-                            <div className="flex h-full w-full items-center justify-center">
-                              <Video size={24} className="text-muted" />
-                            </div>
-                          )}
-                          <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 transition-opacity group-hover:opacity-100">
-                            <Play size={28} className="fill-white text-white" />
-                          </div>
-                        </div>
-                        <div className="px-3 py-2 text-sm font-medium">
-                          {item.title}
-                        </div>
-                      </a>
-                    );
-                  })}
                 </div>
               </div>
             ))}
@@ -283,6 +330,49 @@ export default function SubjectTabs({
           </div>
         )}
       </div>
+
+      {selectedVideo && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
+          role="presentation"
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label={selectedVideo.title}
+            className="relative w-full max-w-4xl overflow-hidden rounded-xl border border-border bg-surface shadow-2xl"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={() => setSelectedVideo(null)}
+              aria-label="Close video"
+              className="absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-white transition-colors hover:bg-black/80"
+            >
+              <X size={20} />
+            </button>
+            <div className="aspect-video w-full bg-black">
+              <iframe
+                src={getVideoEmbedUrl(selectedVideo.url)}
+                title={selectedVideo.title}
+                className="h-full w-full"
+                allow="autoplay; encrypted-media; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
+            <div className="flex items-center justify-between gap-4 px-4 py-3">
+              <div className="text-sm font-medium">{selectedVideo.title}</div>
+              <button
+                type="button"
+                onClick={() => setSelectedVideo(null)}
+                className="shrink-0 rounded-full border border-border px-4 py-2 text-sm font-medium transition-colors hover:bg-surface-2"
+              >
+                Close video
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
