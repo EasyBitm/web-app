@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   FileText,
   ListChecks,
@@ -9,6 +9,8 @@ import {
   ImageIcon,
   Play,
   X,
+  Pause,
+  Volume2,
   type LucideIcon,
 } from "lucide-react";
 import type { Lesson, Resource, ResourceKind } from "../lib/data";
@@ -47,7 +49,7 @@ function getVideoEmbedUrl(url: string) {
     /(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{11})/,
   );
   return match
-    ? `https://www.youtube.com/embed/${match[1]}?autoplay=1&controls=1&fs=1&iv_load_policy=3&modestbranding=1&rel=0`
+    ? `https://www.youtube.com/embed/${match[1]}?autoplay=1&controls=0&disablekb=1&fs=0&iv_load_policy=3&modestbranding=1&rel=0&enablejsapi=1&playsinline=1`
     : url;
 }
 
@@ -79,6 +81,78 @@ export default function SubjectTabs({
   const [expandedLessonId, setExpandedLessonId] = useState<string | null>(null);
   const [hoveredLessonId, setHoveredLessonId] = useState<string | null>(null);
   const [selectedVideo, setSelectedVideo] = useState<Resource | null>(null);
+  const [selectedPdf, setSelectedPdf] = useState<Resource | null>(null);
+  const videoFrameRef = useRef<HTMLIFrameElement>(null);
+  const videoContainerRef = useRef<HTMLDivElement>(null);
+  const videoOverlayTimeoutRef = useRef<number | null>(null);
+  const pdfModalRef = useRef<HTMLDivElement>(null);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(true);
+  const [videoVolume, setVideoVolume] = useState(100);
+  const [showVideoShield, setShowVideoShield] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isPdfFullscreen, setIsPdfFullscreen] = useState(false);
+
+  function showVideoShieldFor(duration: number) {
+    if (videoOverlayTimeoutRef.current) {
+      window.clearTimeout(videoOverlayTimeoutRef.current);
+    }
+    setShowVideoShield(true);
+    videoOverlayTimeoutRef.current = window.setTimeout(
+      () => setShowVideoShield(false),
+      duration,
+    );
+  }
+
+  useEffect(() => {
+    function handleFullscreenChange() {
+      setIsFullscreen(document.fullscreenElement === videoContainerRef.current);
+      setIsPdfFullscreen(document.fullscreenElement === pdfModalRef.current);
+    }
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () =>
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+  }, []);
+
+  useEffect(() => {
+    if (!selectedPdf) return;
+
+    function handleEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") setSelectedPdf(null);
+    }
+
+    window.addEventListener("keydown", handleEscape);
+    return () => window.removeEventListener("keydown", handleEscape);
+  }, [selectedPdf]);
+
+  useEffect(() => {
+    if (!selectedVideo && !selectedPdf) return;
+
+    function handleFullscreenShortcut(event: KeyboardEvent) {
+      if (event.key.toLowerCase() !== "f") return;
+
+      event.preventDefault();
+      const fullscreenTarget = selectedVideo
+        ? videoContainerRef.current
+        : pdfModalRef.current;
+
+      if (document.fullscreenElement) {
+        document.exitFullscreen();
+      } else {
+        fullscreenTarget?.requestFullscreen();
+      }
+    }
+
+    window.addEventListener("keydown", handleFullscreenShortcut);
+    return () => window.removeEventListener("keydown", handleFullscreenShortcut);
+  }, [selectedVideo, selectedPdf]);
+
+  function sendVideoCommand(func: string, args: unknown[] = []) {
+    videoFrameRef.current?.contentWindow?.postMessage(
+      JSON.stringify({ event: "command", func, args }),
+      "*",
+    );
+  }
 
   const items = groups.find((g) => g.kind === active)?.items ?? [];
   const videoItems = groups.find((g) => g.kind === "video")?.items ?? [];
@@ -174,6 +248,9 @@ export default function SubjectTabs({
                                 onClick={(event) => {
                                   event.preventDefault();
                                   setSelectedVideo(item);
+                                  setIsVideoPlaying(true);
+                                  setVideoVolume(100);
+                                  showVideoShieldFor(8000);
                                 }}
                                 className="group overflow-hidden rounded-xl border border-border bg-surface-2"
                               >
@@ -260,6 +337,10 @@ export default function SubjectTabs({
                       href={item.url}
                       target="_blank"
                       rel="noopener noreferrer"
+                      onClick={(event) => {
+                        event.preventDefault();
+                        setSelectedPdf(item);
+                      }}
                       className="rounded-xl border border-border bg-surface px-4 py-3 text-sm font-medium transition-colors hover:bg-surface-2"
                     >
                       {item.title}
@@ -347,18 +428,89 @@ export default function SubjectTabs({
               type="button"
               onClick={() => setSelectedVideo(null)}
               aria-label="Close video"
-              className="absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-white transition-colors hover:bg-black/80"
+              className="absolute right-3 top-3 z-30 flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-white transition-colors hover:bg-black/80"
             >
               <X size={20} />
             </button>
-            <div className="aspect-video w-full bg-black">
+            <div
+              ref={videoContainerRef}
+              className="relative aspect-video w-full bg-black"
+            >
               <iframe
+                ref={videoFrameRef}
                 src={getVideoEmbedUrl(selectedVideo.url)}
                 title={selectedVideo.title}
-                className="h-full w-full"
+                tabIndex={-1}
+                className="pointer-events-none h-full w-full"
                 allow="autoplay; encrypted-media; picture-in-picture"
-                allowFullScreen
               />
+              {showVideoShield && (
+                <>
+                  <div
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-x-0 top-0 z-10 flex h-20 items-center gap-2 bg-black/60 px-5 backdrop-blur-sm"
+                  >
+                    <Image
+                      src="/logo.png"
+                      alt=""
+                      width={36}
+                      height={36}
+                      className="h-9 w-9 rounded-full object-cover"
+                      unoptimized
+                    />
+                    <span className="text-lg font-semibold tracking-tight text-white">
+                      easy<span className="text-accent">BITM</span>
+                    </span>
+                  </div>
+                  <div
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-24 bg-black/60 backdrop-blur-sm"
+                  />
+                </>
+              )}
+              <div className="absolute inset-x-0 bottom-0 z-20 flex items-center gap-3 bg-gradient-to-t from-black/80 to-transparent px-4 pb-3 pt-8 text-white fullscreen:gap-2 fullscreen:px-2 fullscreen:pb-1 fullscreen:pt-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const command = isVideoPlaying ? "pauseVideo" : "playVideo";
+                    sendVideoCommand(command);
+                    setIsVideoPlaying(!isVideoPlaying);
+                    showVideoShieldFor(6000);
+                  }}
+                  aria-label={isVideoPlaying ? "Pause video" : "Play video"}
+                  className="flex h-9 w-9 items-center justify-center rounded-full transition-colors hover:bg-white/20 fullscreen:h-7 fullscreen:w-7"
+                >
+                  {isVideoPlaying ? <Pause size={18} /> : <Play size={18} />}
+                </button>
+                <Volume2 size={17} />
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={videoVolume}
+                  onChange={(event) => {
+                    const volume = Number(event.target.value);
+                    setVideoVolume(volume);
+                    sendVideoCommand("setVolume", [volume]);
+                  }}
+                  aria-label="Video volume"
+                  className="h-1 w-24 accent-white fullscreen:w-16"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (document.fullscreenElement) {
+                      document.exitFullscreen();
+                    } else {
+                      videoContainerRef.current?.requestFullscreen();
+                    }
+                  }}
+                  aria-label={isFullscreen ? "Exit fullscreen" : "Fullscreen video"}
+                  className="ml-auto rounded-full px-3 py-2 text-xs font-medium transition-colors hover:bg-white/20 fullscreen:px-2 fullscreen:py-1"
+                >
+                  {isFullscreen ? "Exit full screen" : "Full screen"}
+                </button>
+              </div>
             </div>
             <div className="flex items-center justify-between gap-4 px-4 py-3">
               <div className="text-sm font-medium">{selectedVideo.title}</div>
@@ -369,6 +521,61 @@ export default function SubjectTabs({
               >
                 Close video
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {selectedPdf && (
+        <div
+          className={`fixed inset-0 z-50 flex items-center justify-center bg-black/70 ${
+            isPdfFullscreen ? "p-0" : "p-4"
+          }`}
+          role="presentation"
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label={selectedPdf.title}
+            ref={pdfModalRef}
+            className={`relative w-full max-w-4xl overflow-hidden rounded-xl border border-border bg-surface shadow-2xl ${
+              isPdfFullscreen
+                ? "flex h-screen max-w-none flex-col rounded-none border-0"
+                : ""
+            }`}
+          >
+            <iframe
+              src={`${selectedPdf.url}#toolbar=1`}
+              title={selectedPdf.title}
+              className={`w-full bg-surface ${
+                isPdfFullscreen ? "min-h-0 flex-1" : "h-[75vh]"
+              }`}
+            />
+            <div className="flex items-center justify-between gap-4 border-t border-border px-4 py-3">
+              <div className="truncate text-sm font-medium">{selectedPdf.title}</div>
+              <div className="flex shrink-0 items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (document.fullscreenElement) {
+                      document.exitFullscreen();
+                    } else {
+                      pdfModalRef.current?.requestFullscreen();
+                    }
+                  }}
+                  aria-label={isPdfFullscreen ? "Exit PDF fullscreen" : "Fullscreen PDF"}
+                  className="rounded-full border border-border px-3 py-2 text-xs font-medium transition-colors hover:bg-surface-2"
+                >
+                  {isPdfFullscreen ? "Exit full screen" : "Full screen"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSelectedPdf(null)}
+                  className="rounded-full border border-border px-4 py-2 text-sm font-medium transition-colors hover:bg-surface-2"
+                >
+                  Close PDF
+                </button>
+              </div>
             </div>
           </div>
         </div>
