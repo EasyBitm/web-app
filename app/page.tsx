@@ -67,7 +67,7 @@ export default async function Home() {
 								Start Learning
 							</a>
 							<a
-								href="#contact"
+								href="/support"
 								className="rounded-full border border-accent-2/60 bg-accent-2/10 px-6 py-3 text-sm font-medium text-accent-2 transition-colors duration-200 hover:bg-accent-2 hover:text-white"
 							>
 								Contribute

@@ -346,12 +346,12 @@ export default function Header() {
           >
             Notices
           </Link>
-          <a
-            href="#"
+          <Link
+            href="/support"
             className="text-sm font-medium text-muted hover:text-foreground no-red-hover"
           >
             Support Us
-          </a>
+          </Link>
 
           {/* User auth section */}
           <div className="ml-4 flex items-center gap-2">
@@ -399,9 +399,9 @@ export default function Header() {
             >
               Notices
             </Link>
-            <a href="#" onClick={closeMenu} className={mobileLinkClass}>
+            <Link href="/support" onClick={closeMenu} className={mobileLinkClass}>
               Support Us
-            </a>
+            </Link>
             <div className="mt-2 border-t border-border pt-3">
               <UserProfile />
             </div>

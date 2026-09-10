@@ -19,6 +19,7 @@ const footerLinks = {
     { label: "Home", href: "/" },
     { label: "CMAT preparation", href: "/cmat" },
     { label: "Notices", href: "/notices" },
+    { label: "Support us", href: "/support" },
   ],
   // Community: [
   //   { label: "Why easyBITM?", href: "/#why" },
