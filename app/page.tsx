@@ -32,7 +32,7 @@ export default async function Home() {
 			<div className="flex flex-col">
 				<Header />
 
-				<section className="relative z-0 mx-auto flex h-screen w-full max-w-6xl scroll-mt-24 flex-col justify-center gap-4 px-6 py-8 lg:h-auto lg:flex-row lg:items-center lg:gap-16 lg:px-10 lg:py-20">
+				<section className="relative z-0 mx-auto flex h-[calc(100dvh-5rem)] w-full max-w-6xl scroll-mt-24 flex-col justify-center gap-4 px-6 py-4 lg:h-auto lg:flex-row lg:items-center lg:gap-16 lg:px-10 lg:py-20">
 					<div
 						aria-hidden="true"
 						className="absolute left-1/2 top-20 h-2 w-2 rounded-full bg-accent animate-pulse"
@@ -42,7 +42,7 @@ export default async function Home() {
 						className="absolute right-10 top-40 h-1.5 w-1.5 rounded-full bg-accent-2 animate-pulse"
 					/>
 
-					<div className="relative z-10 flex min-h-0 flex-1 flex-col items-center justify-center gap-4 lg:items-start">
+					<div className="relative z-10 flex min-h-0 flex-none flex-col items-center justify-center gap-4 text-center lg:flex-1 lg:items-start lg:text-left">
 						<div className="">
 							<h1 className="hero-title mt-0 text-4xl font-bold leading-[1.1] tracking-tight sm:text-5xl lg:text-6xl">
 								<span className="inline-block">
@@ -84,7 +84,7 @@ export default async function Home() {
 						</div>
 					</div>
 
-					<div className="relative isolate order-first block h-[22rem] w-full max-w-md shrink-0 overflow-hidden bg-transparent transition-transform duration-200 hover:scale-[1.02] sm:h-[32rem] lg:order-none lg:h-[34rem] lg:w-[28rem] lg:max-w-none">
+					<div className="relative isolate order-first mb-0 block h-[22rem] w-full max-w-md shrink-0 overflow-hidden bg-transparent transition-transform duration-200 hover:scale-[1.02] sm:h-[32rem] lg:order-none lg:h-[34rem] lg:w-[28rem] lg:max-w-none">
 						{/* Light mode */}
 						<Image
 							src={bitmHomepageImage}
@@ -92,7 +92,7 @@ export default async function Home() {
 							fill
 							preload
 							sizes="(max-width: 639px) min(100vw - 3rem, 20rem), (max-width: 1023px) 20rem, 24rem"
-							className="hero-image-light object-contain hidden [html[data-theme='light']_&]:block"
+							className="hero-image-light hidden scale-[1.2] object-contain [html[data-theme='light']_&]:block sm:scale-100"
 						/>
 
 						{/* Dark mode */}
@@ -102,7 +102,7 @@ export default async function Home() {
 							fill
 							preload
 							sizes="(max-width: 639px) min(100vw - 3rem, 20rem), (max-width: 1023px) 20rem, 24rem"
-							className="hero-image-dark object-contain hidden [html[data-theme='dark']_&]:block"
+							className="hero-image-dark hidden scale-[1.2] object-contain [html[data-theme='dark']_&]:block sm:scale-100"
 						/>
 					</div>
 				</section>

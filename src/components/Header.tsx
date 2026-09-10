@@ -278,8 +278,27 @@ const mobileLinkClass =
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [footerVisible, setFooterVisible] = useState(false);
+  const mobileNavRef = useRef<HTMLElement>(null);
+  const mobileMenuButtonRef = useRef<HTMLButtonElement>(null);
   const router = useRouter();
   const closeMenu = () => setMenuOpen(false);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+
+    function onOutsideClick(event: MouseEvent) {
+      const target = event.target as Node;
+      if (
+        !mobileNavRef.current?.contains(target) &&
+        !mobileMenuButtonRef.current?.contains(target)
+      ) {
+        setMenuOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", onOutsideClick);
+    return () => document.removeEventListener("mousedown", onOutsideClick);
+  }, [menuOpen]);
 
   useEffect(() => {
     const footer = document.querySelector("footer");
@@ -363,6 +382,7 @@ export default function Header() {
         <button
           type="button"
           onClick={() => setMenuOpen((o) => !o)}
+          ref={mobileMenuButtonRef}
           aria-label={menuOpen ? "Close menu" : "Open menu"}
           aria-expanded={menuOpen}
           className="flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-surface text-muted transition-colors hover:border-accent hover:text-foreground sm:hidden"
@@ -375,7 +395,8 @@ export default function Header() {
       {menuOpen && (
         <nav
           aria-label="Mobile navigation"
-          className="border-t border-border bg-background px-6 py-4 sm:hidden"
+          ref={mobileNavRef}
+          className="absolute left-4 right-4 top-full z-50 mt-2 rounded-xl border border-border bg-background px-4 py-4 shadow-xl sm:hidden"
         >
           <div className="flex flex-col gap-1">
             <div className="flex items-center justify-between px-3 py-1">
