@@ -51,34 +51,34 @@ export default function Footer() {
 
   return (
     <footer className="border-t border-border w-full" aria-labelledby="footer-heading">
-      <div className="mx-auto flex w-[calc(100%-10rem)]  flex-col justify-between gap-12 px-6 py-12 md:flex-row md:gap-0">
-        <div className="flex max-w-sm flex-col items-center md:w-1/3">
+      <div className="mx-auto flex w-full max-w-6xl flex-col justify-between gap-10 px-6 py-10 md:flex-row md:gap-0 md:py-12 lg:px-10">
+        <div className="grid max-w-sm grid-cols-[auto_1fr] items-center gap-4 md:flex md:w-1/3 md:flex-col md:items-center">
           <Link href="/" onClick={handleHomeClick} className="inline-flex items-center" aria-label="easyBITM home">
             <Image
               src="/logo.png"
               alt="easyBITM"
               width={96}
               height={28}
-              className="hidden h-24 w-auto object-contain [html[data-theme='dark']_&]:block"
+              className="footer-logo footer-logo-dark hidden h-20 w-auto object-contain [html[data-theme='dark']_&]:block sm:h-24"
             />
             <Image
               src="/logo-light.png"
               alt="easyBITM"
               width={128}
               height={32}
-              className="hidden h-24 w-auto object-contain [html[data-theme='light']_&]:block"
+              className="footer-logo footer-logo-light hidden h-20 w-auto object-contain [html[data-theme='light']_&]:block sm:h-24"
             />
           </Link>
           <h2 id="footer-heading" className="sr-only mt-0">easyBITM footer</h2>
-          <p className="mt-5 max-w-xs text-sm leading-6 text-muted">
-            A free, student-focused resource hub for Bachelor in Information
+          <p className="mt-0 max-w-xs text-sm leading-6 text-muted md:mt-5 md:text-center">
+            A free, exam-focused resource hub for Bachelor in Information
             Technology and Management learners.
           </p>
         </div>
 
-        <div className="flex flex-wrap gap-x-6 md:w-auto">
+        <div className="grid grid-cols-2 gap-x-6 gap-y-8 md:flex md:w-auto">
           {Object.entries(footerLinks).map(([title, links]) => (
-            <div key={title} className="w-1/2 sm:w-40 sm:flex-none">
+            <div key={title} className={`${title === "Semesters" ? "hidden sm:block" : ""} w-full sm:w-40 sm:flex-none`}>
               <h3 className="text-base font-semibold">{title}</h3>
               <ul className="mt-4 flex flex-col gap-2 text-base text-muted">
                 {links.map(({ label, href }) => (

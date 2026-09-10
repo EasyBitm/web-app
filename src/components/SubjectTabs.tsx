@@ -273,7 +273,7 @@ export default function SubjectTabs({
                                 }}
                                 className="group overflow-hidden rounded-xl border border-border bg-surface-2"
                               >
-                                <div className="relative aspect-video w-full bg-surface">
+                                <div className="relative hidden aspect-video w-full bg-surface sm:block">
                                   {thumbnail ? (
                                     <Image
                                       src={thumbnail}
@@ -324,7 +324,7 @@ export default function SubjectTabs({
                       rel="noopener noreferrer"
                       className="group overflow-hidden rounded-xl border border-border bg-surface"
                     >
-                      <div className="relative aspect-3/4 w-full bg-surface-2">
+                      <div className="relative hidden aspect-3/4 w-full bg-surface-2 sm:block">
                         <Image
                           src={item.url}
                           alt={item.title}

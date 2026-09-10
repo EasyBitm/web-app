@@ -320,7 +320,7 @@ export default function Header() {
             width={64}
             height={32}
             priority
-            className="hidden h-20 w-auto object-contain [html[data-theme='dark']_&]:block"
+            className="navbar-logo-dark hidden h-12 w-auto object-contain [html[data-theme='dark']_&]:block sm:h-20"
           />
           <Image
             src="/logo-light.png"
@@ -328,7 +328,7 @@ export default function Header() {
             width={64}
             height={32}
             priority
-            className="hidden h-20 w-auto object-contain [html[data-theme='light']_&]:block"
+            className="navbar-logo-light hidden h-12 w-auto object-contain [html[data-theme='light']_&]:block sm:h-20"
           />
         </Link>
         <nav className="hidden items-center gap-8 sm:flex">
