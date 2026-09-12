@@ -72,7 +72,7 @@ export default function Footer() {
           <h2 id="footer-heading" className="sr-only mt-0">easyBITM footer</h2>
           <p className="mt-0 max-w-xs text-sm leading-6 text-muted md:mt-5 md:text-center">
             A free, exam-focused resource hub for Bachelor in Information
-            Technology and Management learners.
+            Technology and Management Students.
           </p>
         </div>
 
@@ -119,7 +119,7 @@ export default function Footer() {
       </div>
       <div className="border-t border-border">
         <div className="mx-auto flex w-full max-w-6xl flex-col justify-between gap-2 px-6 py-4 text-xs text-muted sm:flex-row sm:items-center">
-          <p>© {new Date().getFullYear()} easyBITM. Built for BITM students.</p>
+          <p>© {new Date().getFullYear()} easyBITM.|| All rights reserved.</p>
           <a href="mailto:easybitm@gmail.com" className="inline-flex items-center gap-2 hover:text-foreground">
             <Mail size={14} aria-hidden="true" />
             easybitm@gmail.com
