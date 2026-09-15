@@ -72,7 +72,7 @@ export default function Footer() {
           <h2 id="footer-heading" className="sr-only mt-0">easyBITM footer</h2>
           <p className="mt-0 max-w-xs text-sm leading-6 text-muted md:mt-5 md:text-center">
             A free, exam-focused resource hub for Bachelor in Information
-            Technology and Management learners.
+            Technology and Management Students.
           </p>
         </div>
 
