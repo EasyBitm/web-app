@@ -5,7 +5,6 @@ import { BookOpen, Layers } from "lucide-react";
 import Header from "../../../src/components/Header";
 import Footer from "../../../src/components/Footer";
 import Breadcrumbs from "../../../src/components/Breadcrumbs";
-import MediaModalButton from "../../../src/components/MediaModalButton";
 import { getSemester, type Difficulty } from "../../../src/lib/data";
 
 export const dynamic = "force-dynamic";
@@ -74,13 +73,12 @@ export default async function SemesterPage({
           {semester.name}
         </h1>
           {semester.overall_syllabus_url && (
-            <MediaModalButton
-              url={semester.overall_syllabus_url}
-              title={`${semester.name} overall syllabus`}
-              label="View overall syllabus"
-              kind="pdf"
+            <Link
+              href={`/semester/${slug}/overall-syllabus`}
               className="inline-flex items-center gap-1.5 rounded-full border border-border px-4 py-2 text-sm font-medium transition-colors hover:border-accent hover:bg-surface-2 hover:text-accent"
-            />
+            >
+              View overall syllabus
+            </Link>
           )}
           
       </div>

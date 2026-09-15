@@ -4,6 +4,7 @@ import Header from "../../../../src/components/Header";
 import Footer from "../../../../src/components/Footer";
 import Breadcrumbs from "../../../../src/components/Breadcrumbs";
 import { getSemester } from "../../../../src/lib/data";
+import PdfDocumentViewer from "../../../../src/components/PdfDocumentViewer";
 
 export const dynamic = "force-dynamic";
 
@@ -67,14 +68,15 @@ export default async function OverallSyllabusPage({
             rel="noopener noreferrer"
             className="shrink-0 rounded-full border border-border px-4 py-2 text-sm font-medium transition-colors hover:bg-surface-2"
           >
-            Open PDF
+            Open original
           </a>
         </div>
-        <iframe
-          src={`${semester.overall_syllabus_url}#toolbar=1`}
-          title={`${semester.name} overall syllabus`}
-          className="mt-4 h-[75vh] w-full rounded-xl border border-border bg-surface"
-        />
+        <div className="mt-4">
+          <PdfDocumentViewer
+            url={semester.overall_syllabus_url}
+            title={`${semester.name} overall syllabus`}
+          />
+        </div>
       </section>
       <Footer />
     </div>

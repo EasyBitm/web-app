@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import {
   FileText,
+  BookOpen,
+  Clock3,
   ListChecks,
   LockKeyhole,
   Video,
@@ -12,12 +14,13 @@ import {
   Pause,
   Play,
   Volume2,
-  X,
   type LucideIcon,
 } from "lucide-react";
 import type { Lesson, Resource, ResourceKind } from "../lib/data";
 import { supabaseAuth } from "../lib/supabaseClient";
 import VideoModal from "./VideoModal";
+import PdfModal from "./PdfModal";
+import PdfDocumentViewer from "./PdfDocumentViewer";
 
 type TabKind = ResourceKind | "lessons";
 
@@ -61,9 +64,16 @@ function groupByLesson(items: Resource[]) {
 export default function SubjectTabs({
   groups,
   lessons = [],
+  subject,
 }: {
   groups: { kind: ResourceKind; items: Resource[] }[];
   lessons?: Lesson[];
+  subject: {
+    code: string;
+    name: string;
+    chapters: number;
+    difficulty: string;
+  };
 }) {
   const availableKinds = tabOrder.filter((kind) =>
     kind === "lessons"
@@ -80,8 +90,6 @@ export default function SubjectTabs({
   const videoContainerRef = useRef<HTMLDivElement>(null);
   const videoFrameRef = useRef<HTMLIFrameElement>(null);
   const videoShieldTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const pdfModalRef = useRef<HTMLDivElement>(null);
-  const [isPdfFullscreen, setIsPdfFullscreen] = useState(false);
   const [isVideoPlaying, setIsVideoPlaying] = useState(true);
   const [showVideoShield, setShowVideoShield] = useState(true);
   const [videoVolume, setVideoVolume] = useState(100);
@@ -137,7 +145,6 @@ export default function SubjectTabs({
     function handleFullscreenChange() {
       const fullscreen = document.fullscreenElement === videoContainerRef.current;
       setIsFullscreen(fullscreen);
-      setIsPdfFullscreen(document.fullscreenElement === pdfModalRef.current);
     }
 
     document.addEventListener("fullscreenchange", handleFullscreenChange);
@@ -154,16 +161,6 @@ export default function SubjectTabs({
   }, []);
 
   useEffect(() => {
-    function handleFullscreenChange() {
-      setIsPdfFullscreen(document.fullscreenElement === pdfModalRef.current);
-    }
-
-    document.addEventListener("fullscreenchange", handleFullscreenChange);
-    return () =>
-      document.removeEventListener("fullscreenchange", handleFullscreenChange);
-  }, []);
-
-  useEffect(() => {
     if (!selectedPdf) return;
 
     function handleEscape(event: KeyboardEvent) {
@@ -172,24 +169,6 @@ export default function SubjectTabs({
 
     window.addEventListener("keydown", handleEscape);
     return () => window.removeEventListener("keydown", handleEscape);
-  }, [selectedPdf]);
-
-  useEffect(() => {
-    if (!selectedPdf) return;
-
-    function handleFullscreenShortcut(event: KeyboardEvent) {
-      if (event.key.toLowerCase() !== "f") return;
-
-      event.preventDefault();
-      if (document.fullscreenElement) {
-        document.exitFullscreen();
-      } else {
-        pdfModalRef.current?.requestFullscreen();
-      }
-    }
-
-    window.addEventListener("keydown", handleFullscreenShortcut);
-    return () => window.removeEventListener("keydown", handleFullscreenShortcut);
   }, [selectedPdf]);
 
   const items = groups.find((g) => g.kind === active)?.items ?? [];
@@ -409,50 +388,70 @@ export default function SubjectTabs({
             </div>
           )
         ) : active === "syllabus" ? (
-          activeSyllabus ? (
-            <div className="flex flex-col gap-3">
-              {/* {syllabusItems.length > 1 && (
-                <div className="flex flex-wrap gap-2">
-                  {syllabusItems.map((item) => (
-                    <button
-                      key={item.id}
-                      type="button"
-                      onClick={() => setSyllabusId(item.id)}
-                      className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
-                        item.id === activeSyllabus.id
-                          ? "bg-accent text-white"
-                          : "bg-surface text-muted hover:text-foreground"
-                      }`}
-                    >
-                      {item.title}
-                    </button>
+          <div className="overflow-hidden rounded-2xl border border-border bg-surface">
+            <div className="grid grid-cols-2 gap-4 border-b border-border px-5 py-5 sm:grid-cols-4">
+              <div>
+                <div className="text-xs text-muted">Subject code</div>
+                <div className="mt-1 text-sm font-semibold">{subject.code}</div>
+              </div>
+              <div>
+                <div className="text-xs text-muted">Chapters</div>
+                <div className="mt-1 text-sm font-semibold">{subject.chapters}</div>
+              </div>
+              <div>
+                <div className="text-xs text-muted">Difficulty</div>
+                <div className="mt-1 text-sm font-semibold">{subject.difficulty}</div>
+              </div>
+              <div>
+                <div className="text-xs text-muted">Topics</div>
+                <div className="mt-1 text-sm font-semibold">{lessons.length}</div>
+              </div>
+            </div>
+
+            <div className="border-b border-border px-5 py-6 sm:px-7">
+              <div className="flex items-center gap-2">
+                <BookOpen size={20} className="text-accent" />
+                <h2 className="text-xl font-semibold">Course contents</h2>
+              </div>
+              {lessons.length > 0 && !activeSyllabus ? (
+                <div className="mt-5 divide-y divide-border">
+                  {lessons.map((lesson, index) => (
+                    <div key={lesson.id} className="py-4 first:pt-0 last:pb-0">
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <h3 className="font-semibold">
+                          {index + 1}. {lesson.title}
+                        </h3>
+                        {lesson.hours != null && (
+                          <span className="inline-flex items-center gap-1.5 rounded-md bg-accent/10 px-2.5 py-1 text-xs font-medium text-accent">
+                            <Clock3 size={13} />
+                            {lesson.hours} {lesson.hours === 1 ? "hour" : "hours"}
+                          </span>
+                        )}
+                      </div>
+                      <p className="mt-2 text-sm leading-6 text-muted">
+                        Study the concepts and practice problems covered in this course topic.
+                      </p>
+                    </div>
                   ))}
                 </div>
-              )} */}
-              {/* <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">
-                  {activeSyllabus.title}
-                </span>
-                <a
-                  href={activeSyllabus.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-xs text-muted hover:text-foreground"
-                >
-                  Open in new tab
-                </a>
-              </div> */}
-              <iframe
-                src={`${activeSyllabus.url}#toolbar=1`}
-                title={activeSyllabus.title}
-                className="h-[75vh] w-full rounded-xl border border-border bg-surface"
-              />
+              ) : (
+                <p className="mt-4 text-sm text-muted">
+                  Course contents have not been added for this subject yet.
+                </p>
+              )}
             </div>
-          ) : (
-            <div className="text-sm text-muted">
-              No syllabus added for this subject yet.
+            
+              {activeSyllabus ? (
+                <div className="mt-5">
+                  <PdfDocumentViewer
+                    url={activeSyllabus.url}
+                    title={activeSyllabus.title}
+                  />
+                </div>
+              ) : (
+                <p className="mt-3 text-sm text-muted">No syllabus document has been uploaded yet.</p>
+              )}
             </div>
-          )
         ) : (
           <div className="flex flex-col gap-2">
             {items.map((item) => (
@@ -479,58 +478,11 @@ export default function SubjectTabs({
       )}
 
       {selectedPdf && (
-        <div
-          className={`fixed inset-0 z-50 flex items-center justify-center bg-black/70 ${
-            isPdfFullscreen ? "p-0" : "p-4"
-          }`}
-          role="presentation"
-        >
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-label={selectedPdf.title}
-            ref={pdfModalRef}
-            className={`relative w-full max-w-4xl overflow-hidden rounded-xl border border-border bg-surface shadow-2xl ${
-              isPdfFullscreen
-                ? "flex h-screen max-w-none flex-col rounded-none border-0"
-                : ""
-            }`}
-          >
-            <iframe
-              src={`${selectedPdf.url}#toolbar=1`}
-              title={selectedPdf.title}
-              className={`w-full bg-surface ${
-                isPdfFullscreen ? "min-h-0 flex-1" : "h-[75vh]"
-              }`}
-            />
-            <div className="flex items-center justify-between gap-4 border-t border-border px-4 py-3">
-              <div className="truncate text-sm font-medium">{selectedPdf.title}</div>
-              <div className="flex shrink-0 items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (document.fullscreenElement) {
-                      document.exitFullscreen();
-                    } else {
-                      pdfModalRef.current?.requestFullscreen();
-                    }
-                  }}
-                  aria-label={isPdfFullscreen ? "Exit PDF fullscreen" : "Fullscreen PDF"}
-                  className="rounded-full border border-border px-3 py-2 text-xs font-medium transition-colors hover:bg-surface-2"
-                >
-                  {isPdfFullscreen ? "Exit full screen" : "Full screen"}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setSelectedPdf(null)}
-                  className="rounded-full border border-border px-4 py-2 text-sm font-medium transition-colors hover:bg-surface-2"
-                >
-                  Close PDF
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <PdfModal
+          url={selectedPdf.url}
+          title={selectedPdf.title}
+          onClose={() => setSelectedPdf(null)}
+        />
       )}
     </div>
   );
