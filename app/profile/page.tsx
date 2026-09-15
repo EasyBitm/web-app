@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   LogIn,
   UserPlus,
@@ -40,6 +41,7 @@ interface ProfileData {
 }
 
 export default function ProfilePage() {
+  const router = useRouter();
   const [mode, setMode] = useState<AuthMode>("login");
   const [loading, setLoading] = useState(false);
   const [session, setSession] = useState<UserSession | null>(null);
@@ -118,9 +120,8 @@ export default function ProfilePage() {
         return;
       }
 
-      // After successful auth, check session
-      await checkSession();
-      setMode("login"); // Reset to login mode after signup
+      // Redirect immediately after successful auth so the profile page is not shown first.
+      router.replace("/");
     } catch (err) {
       console.error("Auth error:", err);
       setErrors({ general: "Something went wrong" });

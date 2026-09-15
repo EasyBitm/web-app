@@ -1,10 +1,12 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import {
   FileText,
   ListChecks,
+  LockKeyhole,
   Video,
   ImageIcon,
   Pause,
@@ -14,6 +16,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import type { Lesson, Resource, ResourceKind } from "../lib/data";
+import { supabaseAuth } from "../lib/supabaseClient";
 import VideoModal from "./VideoModal";
 
 type TabKind = ResourceKind | "lessons";
@@ -73,6 +76,7 @@ export default function SubjectTabs({
   const [expandedLessonId, setExpandedLessonId] = useState<string | null>(null);
   const [selectedVideo, setSelectedVideo] = useState<Resource | null>(null);
   const [selectedPdf, setSelectedPdf] = useState<Resource | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const videoContainerRef = useRef<HTMLDivElement>(null);
   const videoFrameRef = useRef<HTMLIFrameElement>(null);
   const videoShieldTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -82,6 +86,23 @@ export default function SubjectTabs({
   const [showVideoShield, setShowVideoShield] = useState(true);
   const [videoVolume, setVideoVolume] = useState(100);
   const [isFullscreen, setIsFullscreen] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+
+    supabaseAuth.getUser().then(({ data }) => {
+      if (mounted) setIsAuthenticated(Boolean(data.user));
+    });
+
+    const subscription = supabaseAuth.onChange((session) => {
+      if (mounted) setIsAuthenticated(Boolean(session));
+    });
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
+  }, []);
 
   function getVideoEmbedUrl(url: string) {
     const match = url.match(
@@ -343,32 +364,50 @@ export default function SubjectTabs({
             ))}
           </div>
         ) : active === "notes" ? (
-          <div className="flex flex-col gap-4">
-            {groupByLesson(items).map(({ lesson, items: lessonItems }) => (
-              <div key={lesson}>
-                <div className="text-xs font-medium text-muted">
-                  {lesson ? `Lesson ${lesson}` : "Lesson unspecified"}
-                </div>
-                <div className="mt-2 flex flex-col gap-2">
-                  {lessonItems.map((item) => (
-                    <a
-                      key={item.id}
-                      href={item.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={(event) => {
-                        event.preventDefault();
-                        setSelectedPdf(item);
-                      }}
-                      className="rounded-xl border border-border bg-surface px-4 py-3 text-sm font-medium transition-colors hover:bg-surface-2"
-                    >
-                      {item.title}
-                    </a>
-                  ))}
-                </div>
+          !isAuthenticated ? (
+            <div className="flex flex-col items-center gap-3 rounded-xl border border-border bg-surface px-6 py-10 text-center">
+              <LockKeyhole size={28} className="text-muted" aria-hidden="true" />
+              <div>
+                <h2 className="font-semibold">Log in to view notes</h2>
+                <p className="mt-1 text-sm text-muted">
+                  Lessons, syllabus, videos, and question papers are still available without logging in.
+                </p>
               </div>
-            ))}
-          </div>
+              <Link
+                href="/profile"
+                className="rounded-full bg-accent px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90"
+              >
+                Log in or sign up
+              </Link>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-4">
+              {groupByLesson(items).map(({ lesson, items: lessonItems }) => (
+                <div key={lesson}>
+                  <div className="text-xs font-medium text-muted">
+                    {lesson ? `Lesson ${lesson}` : "Lesson unspecified"}
+                  </div>
+                  <div className="mt-2 flex flex-col gap-2">
+                    {lessonItems.map((item) => (
+                      <a
+                        key={item.id}
+                        href={item.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(event) => {
+                          event.preventDefault();
+                          setSelectedPdf(item);
+                        }}
+                        className="rounded-xl border border-border bg-surface px-4 py-3 text-sm font-medium transition-colors hover:bg-surface-2"
+                      >
+                        {item.title}
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )
         ) : active === "syllabus" ? (
           activeSyllabus ? (
             <div className="flex flex-col gap-3">
