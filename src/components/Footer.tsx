@@ -88,7 +88,11 @@ export default function Footer() {
                         {label}
                       </a>
                     ) : (
-                      <Link href={href} className="transition-colors hover:text-foreground">
+                      <Link
+                        href={href}
+                        onClick={href === "/" ? handleHomeClick : undefined}
+                        className="transition-colors hover:text-foreground"
+                      >
                         {label}
                       </Link>
                     )}
@@ -119,7 +123,7 @@ export default function Footer() {
       </div>
       <div className="border-t border-border">
         <div className="mx-auto flex w-full max-w-6xl flex-col justify-between gap-2 px-6 py-4 text-xs text-muted sm:flex-row sm:items-center">
-          <p>© {new Date().getFullYear()} easyBITM.|| All rights reserved.</p>
+          <p>© {new Date().getFullYear()} easyBITM. All right reserved.</p>
           <a href="mailto:easybitm@gmail.com" className="inline-flex items-center gap-2 hover:text-foreground">
             <Mail size={14} aria-hidden="true" />
             easybitm@gmail.com

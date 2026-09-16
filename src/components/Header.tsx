@@ -174,6 +174,18 @@ function UserProfile() {
     return () => document.removeEventListener("mousedown", onClick);
   }, []);
 
+  async function handleSignOut() {
+    const { error } = await supabase.auth.signOut();
+
+    if (error) {
+      console.error("Sign out failed:", error);
+      return;
+    }
+
+    setUser(null);
+    setOpen(false);
+  }
+
   if (loading) {
     return (
       <div className="flex items-center gap-2">
@@ -253,19 +265,14 @@ function UserProfile() {
             My Progress
           </Link>
 
-          <form
-            action="/api/auth/logout"
-            method="POST"
-            onClick={() => setOpen(false)}
+          <button
+            type="button"
+            onClick={handleSignOut}
+            className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-muted hover:bg-surface hover:text-red transition-colors"
           >
-            <button
-              type="submit"
-              className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-muted hover:bg-surface hover:text-red transition-colors"
-            >
-              <LogIn size={14} />
-              Sign Out
-            </button>
-          </form>
+            <LogIn size={14} />
+            Sign Out
+          </button>
         </div>
       )}
     </div>

@@ -114,7 +114,11 @@ export default async function SubjectPage({
           </span>
         </div>
 
-        <SubjectTabs groups={groups} lessons={subject.lessons} />
+        <SubjectTabs
+          groups={groups}
+          lessons={subject.lessons}
+          subject={subject}
+        />
       </section>
 
       <Footer />
