@@ -177,7 +177,7 @@ export default async function Home() {
 						</div>
 					</div>
 				</div>
-				<div className="relative mx-auto mt-8 hidden h-80 w-full max-w-[10rem] shrink-0 sm:block sm:h-96 lg:mt-0 lg:h-[34rem] lg:w-[12rem]">
+				<div className="relative mx-auto mt-8 hidden h-80 w-full max-w-[10rem] shrink-0 sm:block sm:h-96 sm:max-w-[12rem] lg:mt-0 lg:h-[34rem] lg:w-[15rem] lg:max-w-[15rem]">
 					<Image
 						src="/why-section-dark-theme.png"
 						alt="Simple illustration representing easyBITM for students"
