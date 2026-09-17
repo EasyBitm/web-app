@@ -51,6 +51,14 @@ export type Semester = {
   subjects: Subject[];
 };
 
+export type SiteSettings = { id: string; course_structure_url: string | null };
+
+export async function getSiteSettings(): Promise<SiteSettings> {
+  const { data, error } = await supabase.from("site_settings").select("*").eq("id", "global").maybeSingle();
+  if (error) throw error;
+  return data ?? { id: "global", course_structure_url: null };
+}
+
 export async function getSemesters(
   options: { includeHidden?: boolean } = {},
 ): Promise<Semester[]> {

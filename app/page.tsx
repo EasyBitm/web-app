@@ -3,7 +3,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import Header from "../src/components/Header";
 import Footer from "../src/components/Footer";
-import { getSemesters } from "../src/lib/data";
+import { getSemesters, getSiteSettings } from "../src/lib/data";
 import darkthemeImage from "./dark-theme.png";
 import bitmHomepageImage from "./bitmhomepage.png";
 
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-	const semesters = await getSemesters({ includeHidden: true });
+	const [semesters, siteSettings] = await Promise.all([getSemesters({ includeHidden: true }), getSiteSettings()]);
 	const visibleSemesters = semesters.filter((s) => s.is_visible);
 	const stats = [
 		{ label: "Semesters Covered", value: `${visibleSemesters.length || 8}` },
@@ -108,7 +108,10 @@ export default async function Home() {
 				</section>
 
 			<section id="semesters" className="mx-auto min-h-screen w-full max-w-6xl px-6 py-16">
-				<h2 className="text-2xl mt-10 font-semibold">Semesters</h2>
+				<div className="mt-10 flex flex-wrap items-center justify-between gap-3">
+					<h2 className="text-2xl font-semibold">Semesters</h2>
+					{siteSettings.course_structure_url && <a href={siteSettings.course_structure_url} target="_blank" rel="noopener noreferrer" className="rounded-full border border-border px-4 py-2 text-sm font-medium transition-colors hover:border-accent hover:bg-surface-2 hover:text-accent">BITM course structure</a>}
+				</div>
 				<div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
 					{semesters.map((s) =>
 						s.is_visible ? (
