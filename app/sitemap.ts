@@ -51,6 +51,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         changeFrequency: "weekly",
         priority: 0.7,
       });
+      if (subject.overall_notes_url) {
+        urls.push({ url: `${siteUrl}${semesterPath}/${encodeURIComponent(subject.id)}/overall-notes`, changeFrequency: "monthly", priority: 0.6 });
+      }
     }
   }
 

@@ -24,6 +24,7 @@ export type Subject = {
   difficulty: Difficulty;
   sort_order: number;
   oneshot_video_url: string | null;
+  overall_notes_url: string | null;
 };
 
 export type Lesson = {

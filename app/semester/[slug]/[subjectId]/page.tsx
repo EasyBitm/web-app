@@ -93,6 +93,8 @@ export default async function SubjectPage({
         </p>
         <div className="mt-1 flex flex-wrap items-center justify-between gap-3">
           <h1 className="text-2xl font-bold tracking-tight">{subject.name}</h1>
+          <div className="flex flex-wrap gap-2">
+          {subject.overall_notes_url && <a href={`/semester/${slug}/${subject.id}/overall-notes`} className="inline-flex items-center gap-1.5 rounded-full border border-border px-4 py-2 text-sm font-medium transition-colors hover:border-accent hover:bg-surface-2 hover:text-accent">View overall notes</a>}
           {subject.oneshot_video_url && (
             <MediaModalButton
               url={subject.oneshot_video_url}
@@ -102,6 +104,7 @@ export default async function SubjectPage({
               className="inline-flex items-center gap-1.5 rounded-full bg-accent px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent/90"
             />
           )}
+          </div>
         </div>
         <div className="mt-3 flex items-center gap-3">
           <span

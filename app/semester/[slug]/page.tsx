@@ -72,14 +72,7 @@ export default async function SemesterPage({
         <h1 className="mt-6 text-3xl font-bold tracking-tight">
           {semester.name}
         </h1>
-          {semester.overall_syllabus_url && (
-            <Link
-              href={`/semester/${slug}/overall-syllabus`}
-              className="inline-flex items-center gap-1.5 rounded-full border border-border px-4 py-2 text-sm font-medium transition-colors hover:border-accent hover:bg-surface-2 hover:text-accent"
-            >
-              View overall syllabus
-            </Link>
-          )}
+          {semester.overall_syllabus_url && <Link href={`/semester/${slug}/overall-syllabus`} className="inline-flex items-center gap-1.5 rounded-full border border-border px-4 py-2 text-sm font-medium transition-colors hover:border-accent hover:bg-surface-2 hover:text-accent">View overall syllabus</Link>}
           
       </div>
           <div className="flex items-center gap-1.5 text-sm text-muted">
