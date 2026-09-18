@@ -110,7 +110,9 @@ export default async function Home() {
 			<section id="semesters" className="mx-auto min-h-screen w-full max-w-6xl px-6 py-16">
 				<div className="mt-10 flex flex-wrap items-center justify-between gap-3">
 					<h2 className="text-2xl font-semibold">Semesters</h2>
-					{siteSettings.course_structure_url && <a href={siteSettings.course_structure_url} target="_blank" rel="noopener noreferrer" className="rounded-full border border-border px-4 py-2 text-sm font-medium transition-colors hover:border-accent hover:bg-surface-2 hover:text-accent">BITM course structure</a>}
+					{siteSettings.course_structure_url && <Link href={`/course-structure`} className="inline-flex items-center gap-1.5 rounded-full border border-border px-4 py-2 text-sm font-medium transition-colors hover:border-accent hover:bg-surface-2 hover:text-accent">View overall syllabus</Link>}
+					
+					{/* // <a href={siteSettings.course_structure_url} target="_blank" rel="noopener noreferrer" className="rounded-full border border-border px-4 py-2 text-sm font-medium transition-colors hover:border-accent hover:bg-surface-2 hover:text-accent">BITM course structure</a>} */}
 				</div>
 				<div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
 					{semesters.map((s) =>

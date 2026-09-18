@@ -146,3 +146,15 @@ export async function getSubject(
     lessons: lessons ?? [],
   };
 }
+
+export async function getCourseStructure(): Promise<SiteSettings | null> {
+  const { data, error } = await supabase
+    .from("site_settings")
+    .select("id, course_structure_url")
+    .eq("id", "global")
+    .maybeSingle();
+
+  if (error) throw error;
+
+  return data ?? null;
+}
