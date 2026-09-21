@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Maximize, Minimize, X } from "lucide-react";
+import PdfDocumentViewer from "./PdfDocumentViewer";
 
 export default function PdfModal({
   url,
@@ -83,11 +84,11 @@ export default function PdfModal({
             </button>
           </div>
         </div>
-        <iframe
-          src={`${url}#toolbar=1`}
-          title={title}
-          className={`w-full bg-surface ${isFullscreen ? "min-h-0 flex-1" : "h-[75vh]"}`}
-        />
+        <div
+          className={`w-full overflow-y-auto bg-surface p-4 ${isFullscreen ? "min-h-0 flex-1" : "h-[75vh]"}`}
+        >
+          <PdfDocumentViewer url={url} title={title} />
+        </div>
       </div>
     </div>
   );

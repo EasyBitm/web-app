@@ -285,10 +285,15 @@ const mobileLinkClass =
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [footerVisible, setFooterVisible] = useState(false);
+  const [mobileSemesters, setMobileSemesters] = useState<SemesterLink[]>([]);
   const mobileNavRef = useRef<HTMLElement>(null);
   const mobileMenuButtonRef = useRef<HTMLButtonElement>(null);
   const router = useRouter();
   const closeMenu = () => setMenuOpen(false);
+
+  useEffect(() => {
+    fetchSemesters().then(setMobileSemesters);
+  }, []);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -410,13 +415,19 @@ export default function Header() {
               <span className="text-sm text-muted">Theme</span>
               <ThemeToggle />
             </div>
-            <Link
-              href="/#semesters"
-              onClick={closeMenu}
-              className={mobileLinkClass}
-            >
-              Semesters
-            </Link>
+            <div className="px-3 py-1 text-sm text-muted">Semesters</div>
+            <div className="grid grid-cols-2 gap-1 px-1">
+              {mobileSemesters.map((s) => (
+                <Link
+                  key={s.slug}
+                  href={`/semester/${s.slug}`}
+                  onClick={closeMenu}
+                  className="rounded-lg px-3 py-2 text-center text-sm text-muted hover:bg-surface-2 hover:text-foreground"
+                >
+                  {s.name}
+                </Link>
+              ))}
+            </div>
             <Link href="/cmat" onClick={closeMenu} className={mobileLinkClass}>
               CMAT
             </Link>
