@@ -84,7 +84,7 @@ export default async function Home() {
 						</div>
 					</div>
 
-					<div className="relative isolate order-first mb-0 block h-[22rem] w-full max-w-md shrink-0 overflow-hidden bg-transparent transition-transform duration-200 hover:scale-[1.02] sm:h-[32rem] lg:order-none lg:h-[34rem] lg:w-[28rem] lg:max-w-none">
+					<div className="relative isolate order-first mb-0 hidden h-[22rem] w-full max-w-md shrink-0 overflow-hidden bg-transparent transition-transform duration-200 hover:scale-[1.02] sm:block sm:h-[32rem] lg:order-none lg:h-[34rem] lg:w-[28rem] lg:max-w-none">
 						{/* Light mode */}
 						<Image
 							src={bitmHomepageImage}
@@ -107,8 +107,8 @@ export default async function Home() {
 					</div>
 				</section>
 
-			<section id="semesters" className="mx-auto min-h-screen w-full max-w-6xl px-6 py-16">
-				<div className="mt-10 flex flex-wrap items-center justify-between gap-3">
+			<section id="semesters" className="mx-auto w-full max-w-6xl px-6 py-16 sm:min-h-screen">
+				<div className="flex flex-wrap items-center justify-between gap-3 sm:mt-10">
 					<h2 className="text-2xl font-semibold">Semesters</h2>
 					{siteSettings.course_structure_url && <Link href={`/course-structure`} className="inline-flex items-center gap-1.5 rounded-full border border-border px-4 py-2 text-sm font-medium transition-colors hover:border-accent hover:bg-surface-2 hover:text-accent">View course structure</Link>}
 					

@@ -13,6 +13,10 @@ export const supabaseAuth = {
       password,
       options: {
         data: meta,
+        emailRedirectTo:
+          typeof window !== "undefined"
+            ? `${window.location.origin}/auth/callback`
+            : undefined,
       },
     });
     return { data, error };
@@ -22,6 +26,20 @@ export const supabaseAuth = {
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
+    });
+    return { data, error };
+  },
+
+  async resendVerification(email: string) {
+    const { data, error } = await supabase.auth.resend({
+      type: "signup",
+      email,
+      options: {
+        emailRedirectTo:
+          typeof window !== "undefined"
+            ? `${window.location.origin}/auth/callback`
+            : undefined,
+      },
     });
     return { data, error };
   },

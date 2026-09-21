@@ -94,6 +94,9 @@ export default function SubjectTabs({
   const [showVideoShield, setShowVideoShield] = useState(true);
   const [videoVolume, setVideoVolume] = useState(100);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [failedThumbnails, setFailedThumbnails] = useState<Set<string>>(
+    new Set(),
+  );
 
   useEffect(() => {
     let mounted = true;
@@ -260,7 +263,9 @@ export default function SubjectTabs({
                         {videoItems
                           .filter((item) => (item.lesson ?? 0) === i + 1)
                           .map((item) => {
-                            const thumbnail = getYoutubeThumbnail(item.url);
+                            const thumbnail = failedThumbnails.has(item.id)
+                              ? null
+                              : getYoutubeThumbnail(item.url);
                             return (
                               <a
                                 key={item.id}
@@ -273,14 +278,24 @@ export default function SubjectTabs({
                                 }}
                                 className="group overflow-hidden rounded-xl border border-border bg-surface-2"
                               >
-                                <div className="relative aspect-video w-full bg-surface">
+                                <div
+                                  className="relative w-full bg-surface"
+                                  style={{ paddingTop: "56.25%" }}
+                                >
                                   {thumbnail ? (
                                     <Image
                                       src={thumbnail}
                                       alt={item.title}
                                       fill
-                                      className="object-cover transition-transform group-hover:scale-105"
+                                      sizes="(min-width: 640px) 50vw, 100vw"
+                                      className="lesson-thumbnail object-cover transition-transform group-hover:scale-105"
                                       unoptimized
+                                      referrerPolicy="no-referrer"
+                                      onError={() =>
+                                        setFailedThumbnails((prev) =>
+                                          new Set(prev).add(item.id),
+                                        )
+                                      }
                                     />
                                   ) : (
                                     <div className="flex h-full w-full items-center justify-center">

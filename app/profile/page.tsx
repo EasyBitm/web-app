@@ -13,6 +13,7 @@ import {
   X,
   ArrowLeft,
   Loader2,
+  MailCheck,
 } from "lucide-react";
 import StudyProgress from "../../src/components/StudyProgress";
 import { supabaseAuth } from "../../src/lib/supabaseClient";
@@ -48,6 +49,8 @@ export default function ProfilePage() {
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [errors, setErrors] = useState<FormErrors>({});
   const [showProgress, setShowProgress] = useState(false);
+  const [pendingVerificationEmail, setPendingVerificationEmail] = useState<string | null>(null);
+  const [resendState, setResendState] = useState<"idle" | "sending" | "sent">("idle");
 
   // Form state
   const [email, setEmail] = useState("");
@@ -108,11 +111,27 @@ export default function ProfilePage() {
     }
 
     try {
-      const { error } = mode === "login"
-        ? await supabaseAuth.signIn(email, password)
-        : await supabaseAuth.signUp(email, password, {
-            full_name: fullName,
-          });
+      if (mode === "login") {
+        const { error } = await supabaseAuth.signIn(email, password);
+
+        if (error) {
+          if (error.message.toLowerCase().includes("email not confirmed")) {
+            setPendingVerificationEmail(email);
+          } else {
+            setErrors({ general: error.message });
+          }
+          setLoading(false);
+          return;
+        }
+
+        // Redirect immediately after successful auth so the profile page is not shown first.
+        router.replace("/");
+        return;
+      }
+
+      const { data, error } = await supabaseAuth.signUp(email, password, {
+        full_name: fullName,
+      });
 
       if (error) {
         setErrors({ general: error.message });
@@ -120,13 +139,38 @@ export default function ProfilePage() {
         return;
       }
 
-      // Redirect immediately after successful auth so the profile page is not shown first.
+      if (!data.session) {
+        // Email confirmation is required before a session is created.
+        setPendingVerificationEmail(email);
+        setPassword("");
+        setLoading(false);
+        return;
+      }
+
       router.replace("/");
     } catch (err) {
       console.error("Auth error:", err);
       setErrors({ general: "Something went wrong" });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleResendVerification = async () => {
+    if (!pendingVerificationEmail) return;
+    setResendState("sending");
+    try {
+      const { error } = await supabaseAuth.resendVerification(pendingVerificationEmail);
+      if (error) {
+        setErrors({ general: error.message });
+        setResendState("idle");
+        return;
+      }
+      setResendState("sent");
+    } catch (err) {
+      console.error("Resend verification error:", err);
+      setErrors({ general: "Something went wrong" });
+      setResendState("idle");
     }
   };
 
@@ -144,6 +188,70 @@ export default function ProfilePage() {
       console.error("Logout error:", err);
     }
   };
+
+  // Show a "check your inbox" screen after signup until the email is confirmed
+  if (pendingVerificationEmail) {
+    return (
+      <div className="flex flex-col flex-1">
+        <header className="sticky top-0 z-40 flex items-center justify-between border-b border-border bg-surface/95 backdrop-blur supports-[backdrop-filter]:bg-surface/80 px-6 py-3">
+          <Link href="/" className="text-muted hover:text-foreground transition-colors">
+            <ArrowLeft size={18} />
+          </Link>
+          <div className="text-sm text-muted">easyBITM</div>
+          <div className="h-6 w-6" />
+        </header>
+
+        <main className="flex flex-1 flex-col items-center justify-center px-6 py-16 text-center">
+          <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-accent/10 text-accent">
+            <MailCheck size={32} />
+          </div>
+
+          <h1 className="text-2xl font-bold">Verify your email</h1>
+          <p className="mt-2 max-w-sm text-muted">
+            We sent a confirmation link to{" "}
+            <span className="font-medium text-foreground">{pendingVerificationEmail}</span>.
+            Click it to activate your account.
+          </p>
+
+          {errors.general && (
+            <div className="mt-4 flex items-center gap-2 rounded-lg bg-red/10 border border-red/20 px-4 py-3 text-sm text-red">
+              <AlertCircle size={16} />
+              {errors.general}
+            </div>
+          )}
+
+          <button
+            onClick={handleResendVerification}
+            disabled={resendState === "sending" || resendState === "sent"}
+            className="mt-6 flex items-center gap-2 rounded-lg bg-accent px-6 py-2.5 text-sm font-medium text-white transition-colors hover-primary disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {resendState === "sending" ? (
+              <>
+                <Loader2 size={16} className="animate-spin" />
+                Sending...
+              </>
+            ) : resendState === "sent" ? (
+              "Email sent"
+            ) : (
+              "Resend email"
+            )}
+          </button>
+
+          <button
+            onClick={() => {
+              setPendingVerificationEmail(null);
+              setResendState("idle");
+              setErrors({});
+              setMode("login");
+            }}
+            className="mt-4 text-sm text-muted hover:text-foreground"
+          >
+            Back to sign in
+          </button>
+        </main>
+      </div>
+    );
+  }
 
   // Redirect to progress view when logged in
   if (showProgress && session) {

@@ -53,8 +53,7 @@ body {
     display: block !important;
   }
 
-  html[data-theme="dark"] img.hero-image-dark,
-  html[data-theme="light"] img.hero-image-light {
+  img.lesson-thumbnail {
     display: block !important;
   }
 }
