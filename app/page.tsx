@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import Header from "../src/components/Header";
 import Footer from "../src/components/Footer";
+import FeedbackButton from "../src/components/FeedbackButton";
 import { getSemesters, getSiteSettings } from "../src/lib/data";
 import darkthemeImage from "./dark-theme.png";
 import bitmHomepageImage from "./bitmhomepage.png";
@@ -230,12 +231,9 @@ export default async function Home() {
 						<p className="mt-8 text-sm text-muted leading-relaxed">
 							See outdated or incorrect content? Point it out and help us keep everything fresh. Every suggestion matters, and every correction helps.
 						</p>
-						<a
-							href="mailto:easybitm@gmail.com"
-							className="mt-6 inline-flex rounded-full bg-accent px-6 py-3 text-sm font-medium text-white transition-colors hover-primary"
-						>
+						<FeedbackButton className="mt-6 inline-flex rounded-full bg-accent px-6 py-3 text-sm font-medium text-white transition-colors hover-primary">
 							Send Feedback
-						</a>
+						</FeedbackButton>
 					</div>
 
 					<div className="relative hidden h-80 w-full max-w-sm shrink-0 sm:block sm:h-96 lg:h-[30rem] lg:w-[25rem]">

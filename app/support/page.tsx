@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { ArrowRight, BookOpen, Bug, Heart, Mail, Share2 } from "lucide-react";
 import Header from "../../src/components/Header";
 import Footer from "../../src/components/Footer";
+import FeedbackButton from "../../src/components/FeedbackButton";
 
 export const metadata: Metadata = {
   title: "Support Us",
@@ -52,13 +52,10 @@ export default function SupportPage() {
             BITM community. You can help make studying a little easier for
             someone else.
           </p>
-          <a
-            href="mailto:easybitm@gmail.com"
-            className="mt-8 inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3 text-sm font-medium text-white transition-colors hover-primary"
-          >
+          <FeedbackButton className="mt-8 inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3 text-sm font-medium text-white transition-colors hover-primary">
             <Mail size={16} aria-hidden="true" />
             Get in touch
-          </a>
+          </FeedbackButton>
         </section>
 
         <section className="border-t border-border">
@@ -103,13 +100,10 @@ export default function SupportPage() {
                 We would love to hear how easyBITM can serve students better.
               </p>
             </div>
-            <Link
-              href="/#contact"
-              className="inline-flex items-center gap-2 rounded-full border border-accent-2/60 bg-accent-2/10 px-5 py-3 text-sm font-medium text-accent-2 transition-colors hover:bg-accent-2 hover:text-white"
-            >
+            <FeedbackButton className="inline-flex items-center gap-2 rounded-full border border-accent-2/60 bg-accent-2/10 px-5 py-3 text-sm font-medium text-accent-2 transition-colors hover:bg-accent-2 hover:text-white">
               Send feedback
               <ArrowRight size={16} aria-hidden="true" />
-            </Link>
+            </FeedbackButton>
           </div>
         </section>
       </main>
