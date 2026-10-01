@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { Award, ChevronDown, LogIn, Menu, Moon, Sun, X } from "lucide-react";
+import { ChevronDown, LogIn, LogOut, Menu, Moon, Sun, User, X } from "lucide-react";
 import { supabase } from "../lib/supabaseClient";
 
 type SemesterLink = { slug: string; name: string };
@@ -210,67 +210,27 @@ function UserProfile() {
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-2 rounded-lg border border-border bg-surface-2 px-3 py-1.5 text-sm text-muted hover:border-accent hover:text-foreground transition-colors"
+        aria-label="Account"
+        className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-surface-2 text-muted hover:border-accent hover:text-foreground transition-colors"
       >
-        {user.profile?.avatar_url ? (
-          <img
-            src={user.profile.avatar_url}
-            alt="Avatar"
-            className="h-6 w-6 rounded-full object-cover ring-1 ring-border"
-          />
-        ) : (
-          <div className="flex h-6 w-6 items-center justify-center rounded-full bg-accent/10 text-accent text-xs font-medium">
-            {user.profile?.full_name?.[0] || user.email[0].toUpperCase()}
-          </div>
-        )}
-        <span className="hidden sm:block truncate max-w-[120px]">
-          {user.profile?.full_name || user.email.split("@")[0]}
-        </span>
-        <ChevronDown
-          size={14}
-          className={`transition-transform ${open ? "rotate-180" : ""}`}
-        />
+        <User size={16} />
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full z-20 mt-2 w-64 rounded-xl border border-border bg-surface-2 p-2 shadow-xl">
-          <div className="flex items-center gap-3 rounded-lg bg-surface p-3 pb-2">
-            {user.profile?.avatar_url ? (
-              <img
-                src={user.profile.avatar_url}
-                alt="Avatar"
-                className="h-10 w-10 rounded-full object-cover ring-2 ring-border"
-              />
-            ) : (
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/10 text-accent text-lg font-medium">
-                {user.profile?.full_name?.[0] || user.email[0].toUpperCase()}
-              </div>
-            )}
-            <div>
-              <div className="text-sm font-medium">
-                {user.profile?.full_name || "User"}
-              </div>
-              <div className="text-xs text-muted">{user.email}</div>
-            </div>
+        <div className="absolute right-0 top-full z-20 mt-2 w-64 rounded-xl border border-border bg-surface-2 p-3 shadow-xl">
+          <div className="text-sm font-medium">
+            {user.profile?.full_name || user.email.split("@")[0]}
           </div>
+          <div className="text-xs text-muted">{user.email}</div>
 
           <div className="my-2 border-t border-border" />
-
-          <Link
-            href="/profile"
-            onClick={() => setOpen(false)}
-            className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-muted hover:bg-surface hover:text-foreground"
-          >
-            <Award size={14} />
-            My Progress
-          </Link>
 
           <button
             type="button"
             onClick={handleSignOut}
             className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-muted hover:bg-surface hover:text-red transition-colors"
           >
-            <LogIn size={14} />
+            <LogOut size={14} />
             Sign Out
           </button>
         </div>
