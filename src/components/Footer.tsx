@@ -28,6 +28,18 @@ const footerLinks = {
   // ],
 };
 
+const CONTACT_EMAIL = "easybitm@gmail.com";
+const GMAIL_COMPOSE_URL = `https://mail.google.com/mail/?view=cm&fs=1&to=${CONTACT_EMAIL}`;
+
+// Laptops often have no default mail app, so mailto: silently does nothing there.
+// On mouse/trackpad devices open Gmail's compose page instead; phones keep mailto:.
+function handleEmailClick(event: React.MouseEvent<HTMLAnchorElement>) {
+  if (window.matchMedia("(pointer: fine)").matches) {
+    event.preventDefault();
+    window.open(GMAIL_COMPOSE_URL, "_blank", "noopener,noreferrer");
+  }
+}
+
 const socialLinks = [
   { label: "Instagram", href: "https://www.instagram.com/easybitm/", Icon: FaInstagram },
   { label: "Facebook", href: "https://www.facebook.com/easybitm/", Icon: FaFacebookF },
@@ -84,7 +96,7 @@ export default function Footer() {
                 {links.map(({ label, href }) => (
                   <li key={label}>
                     {href.startsWith("mailto:") ? (
-                      <a href={href} className="transition-colors hover:text-foreground">
+                      <a href={href} onClick={handleEmailClick} className="transition-colors hover:text-foreground">
                         {label}
                       </a>
                     ) : (
@@ -124,9 +136,9 @@ export default function Footer() {
       <div className="border-t border-border">
         <div className="mx-auto flex w-full max-w-6xl flex-col justify-between gap-2 px-6 py-4 text-xs text-muted sm:flex-row sm:items-center">
           <p>© {new Date().getFullYear()} easyBITM. All right reserved.</p>
-          <a href="mailto:easybitm@gmail.com" className="inline-flex items-center gap-2 hover:text-foreground">
+          <a href={`mailto:${CONTACT_EMAIL}`} onClick={handleEmailClick} className="inline-flex items-center gap-2 hover:text-foreground">
             <Mail size={14} aria-hidden="true" />
-            easybitm@gmail.com
+            {CONTACT_EMAIL}
           </a>
         </div>
       </div>

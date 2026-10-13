@@ -2,7 +2,7 @@ import { supabase } from "./supabaseClient";
 
 export type Difficulty = "Easy" | "Medium" | "Hard";
 
-export type ResourceKind = "notes" | "syllabus" | "video" | "question_paper";
+export type ResourceKind = "notes" | "handwritten_notes" | "syllabus" | "video" | "question_paper";
 
 export type Resource = {
   id: string;

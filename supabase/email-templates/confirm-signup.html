@@ -1,0 +1,60 @@
+<!--
+  Supabase → Authentication → Email Templates → "Confirm signup"
+  Subject: Confirm your easyBITM account
+  Paste everything below into the "Message body" (Source) box.
+-->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Confirm your easyBITM account</title>
+  </head>
+  <body style="margin:0;padding:0;background-color:#12151b;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#f4f4f5;">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:#12151b;">
+      <tr>
+        <td align="center" style="padding:40px 16px;">
+          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:480px;">
+            <tr>
+              <td align="center" style="padding-bottom:24px;">
+                <a href="{{ .SiteURL }}" style="text-decoration:none;">
+                  <img src="https://www.easybitm.com/logo.png" alt="easyBITM" height="56" style="display:block;height:56px;width:auto;border:0;" />
+                </a>
+              </td>
+            </tr>
+            <tr>
+              <td style="background-color:#191c23;border:1px solid #353a46;border-radius:16px;padding:32px 28px;">
+                <h1 style="margin:0 0 12px;font-size:22px;line-height:1.3;font-weight:700;color:#f4f4f5;">
+                  Confirm your email
+                </h1>
+                <p style="margin:0 0 24px;font-size:15px;line-height:1.6;color:#a1a1aa;">
+                  Welcome to easyBITM! Tap the button below to verify
+                  <strong style="color:#f4f4f5;">{{ .Email }}</strong> and start tracking your study progress.
+                </p>
+                <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+                  <tr>
+                    <td align="center" style="border-radius:999px;background-color:#22c55e;">
+                      <a href="{{ .ConfirmationURL }}" style="display:inline-block;padding:12px 28px;font-size:15px;font-weight:600;color:#ffffff;text-decoration:none;border-radius:999px;">
+                        Verify email
+                      </a>
+                    </td>
+                  </tr>
+                </table>
+                <p style="margin:24px 0 0;font-size:13px;line-height:1.6;color:#a1a1aa;">
+                  Button not working? Copy this link into your browser:<br />
+                  <a href="{{ .ConfirmationURL }}" style="color:#22c55e;word-break:break-all;">{{ .ConfirmationURL }}</a>
+                </p>
+              </td>
+            </tr>
+            <tr>
+              <td align="center" style="padding-top:24px;font-size:12px;line-height:1.6;color:#71717a;">
+                Didn't sign up for easyBITM? You can safely ignore this email.<br />
+                © easyBITM · <a href="mailto:easybitm@gmail.com" style="color:#71717a;">easybitm@gmail.com</a>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

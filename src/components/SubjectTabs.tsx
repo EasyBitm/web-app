@@ -11,6 +11,7 @@ import {
   LockKeyhole,
   Video,
   ImageIcon,
+  PenLine,
   Pause,
   Play,
   Volume2,
@@ -24,12 +25,13 @@ import PdfDocumentViewer from "./PdfDocumentViewer";
 
 type TabKind = ResourceKind | "lessons";
 
-const tabOrder: TabKind[] = ["lessons", "notes", "syllabus", "question_paper"];
+const tabOrder: TabKind[] = ["lessons", "notes", "handwritten_notes", "syllabus", "question_paper"];
 
 const kindMeta: Record<TabKind, { label: string; icon: LucideIcon }> = {
   lessons: { label: "Lessons", icon: ListChecks },
   video: { label: "Videos", icon: Video },
   notes: { label: "Notes", icon: FileText },
+  handwritten_notes: { label: "Handwritten Notes", icon: PenLine },
   syllabus: { label: "Syllabus", icon: ListChecks },
   question_paper: { label: "Question Papers", icon: ImageIcon },
 };
@@ -357,7 +359,7 @@ export default function SubjectTabs({
               </div>
             ))}
           </div>
-        ) : active === "notes" ? (
+        ) : active === "notes" || active === "handwritten_notes" ? (
           !isAuthenticated ? (
             <div className="flex flex-col items-center gap-3 rounded-xl border border-border bg-surface px-6 py-10 text-center">
               <LockKeyhole size={28} className="text-muted" aria-hidden="true" />
@@ -374,6 +376,26 @@ export default function SubjectTabs({
                 Log in or sign up
               </Link>
             </div>
+          ) : active === "handwritten_notes" ? (
+            // One handwritten notes PDF per subject, shown inline like the syllabus.
+            items[0] && (
+              <div className="overflow-hidden rounded-2xl border border-border bg-surface p-5 sm:p-7">
+                <div className="flex items-center justify-between gap-4">
+                  <h2 className="text-xl font-semibold">{items[0].title}</h2>
+                  <a
+                    href={items[0].url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="shrink-0 rounded-full border border-border px-4 py-2 text-sm font-medium transition-colors hover:bg-surface-2"
+                  >
+                    Open original
+                  </a>
+                </div>
+                <div className="mt-5">
+                  <PdfDocumentViewer url={items[0].url} title={items[0].title} />
+                </div>
+              </div>
+            )
           ) : (
             <div className="flex flex-col gap-4">
               {groupByLesson(items).map(({ lesson, items: lessonItems }) => (

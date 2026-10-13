@@ -67,7 +67,7 @@ export default async function SubjectPage({
   }
 
   const groups = (
-    ["notes", "syllabus", "video", "question_paper"] as ResourceKind[]
+    ["notes", "handwritten_notes", "syllabus", "video", "question_paper"] as ResourceKind[]
   )
     .map((kind) => ({
       kind,
