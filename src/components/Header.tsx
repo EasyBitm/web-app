@@ -291,7 +291,7 @@ export default function Header() {
         footerVisible ? "-translate-y-full" : "translate-y-0"
       }`}
     >
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+      <div className="flex w-full items-center justify-between px-4 py-2 sm:px-6">
         <Link
           href="/"
           onClick={(event) => {
@@ -311,7 +311,7 @@ export default function Header() {
             width={64}
             height={32}
             priority
-            className="navbar-logo-dark hidden h-12 w-auto object-contain [html[data-theme='dark']_&]:block sm:h-20"
+            className="navbar-logo-dark hidden h-10 w-auto object-contain [html[data-theme='dark']_&]:block sm:h-12"
           />
           <Image
             src="/logo-light.png"
@@ -319,7 +319,7 @@ export default function Header() {
             width={64}
             height={32}
             priority
-            className="navbar-logo-light hidden h-12 w-auto object-contain [html[data-theme='light']_&]:block sm:h-20"
+            className="navbar-logo-light hidden h-10 w-auto object-contain [html[data-theme='light']_&]:block sm:h-12"
           />
         </Link>
         <nav className="hidden items-center gap-8 sm:flex">

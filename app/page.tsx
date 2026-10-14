@@ -33,7 +33,7 @@ export default async function Home() {
 			<div className="flex flex-col">
 				<Header />
 
-				<section className="relative z-0 mx-auto flex h-[calc(100dvh-5rem)] w-full max-w-6xl scroll-mt-24 flex-col justify-center gap-4 px-6 py-4 lg:h-auto lg:flex-row lg:items-center lg:gap-16 lg:px-10 lg:py-20">
+				<section className="relative z-0 mx-auto flex h-[calc(100dvh-3.5rem)] w-full max-w-6xl scroll-mt-16 flex-col justify-center gap-4 px-6 py-4 lg:h-auto lg:flex-row lg:items-center lg:gap-16 lg:px-10 lg:py-20">
 					<div
 						aria-hidden="true"
 						className="absolute left-1/2 top-20 h-2 w-2 rounded-full bg-accent animate-pulse"
