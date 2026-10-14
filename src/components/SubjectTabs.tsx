@@ -17,7 +17,7 @@ import {
   Volume2,
   type LucideIcon,
 } from "lucide-react";
-import type { Lesson, Resource, ResourceKind } from "../lib/data";
+import type { Lesson, Resource, ResourceKind, SyllabusContent } from "../lib/data";
 import { supabaseAuth } from "../lib/supabaseClient";
 import VideoModal from "./VideoModal";
 import PdfModal from "./PdfModal";
@@ -79,12 +79,16 @@ export default function SubjectTabs({
     name: string;
     chapters: number;
     difficulty: string;
+    syllabus_content?: SyllabusContent | null;
   };
 }) {
+  const syllabusContent = subject.syllabus_content ?? null;
   const availableKinds = tabOrder.filter((kind) =>
     kind === "lessons"
       ? lessons.length > 0
-      : groups.some((g) => g.kind === kind),
+      : kind === "syllabus" && syllabusContent
+        ? true
+        : groups.some((g) => g.kind === kind),
   );
   const [active, setActive] = useState<TabKind | null>(
     availableKinds[0] ?? null,
@@ -424,6 +428,106 @@ export default function SubjectTabs({
               ))}
             </div>
           )
+        ) : active === "syllabus" && syllabusContent ? (
+          // Formatted syllabus extracted from the PDF in the admin app.
+          <div className="overflow-hidden rounded-2xl border border-border bg-surface">
+            <div className="grid grid-cols-2 gap-4 border-b border-border px-5 py-5 sm:grid-cols-4">
+              <div>
+                <div className="text-xs text-muted">Subject code</div>
+                <div className="mt-1 text-sm font-semibold">{subject.code}</div>
+              </div>
+              <div>
+                <div className="text-xs text-muted">Credit hours</div>
+                <div className="mt-1 text-sm font-semibold">{syllabusContent.credit_hours ?? "—"}</div>
+              </div>
+              <div>
+                <div className="text-xs text-muted">Lecture hours</div>
+                <div className="mt-1 text-sm font-semibold">{syllabusContent.lecture_hours ?? "—"}</div>
+              </div>
+              <div>
+                <div className="text-xs text-muted">Units</div>
+                <div className="mt-1 text-sm font-semibold">{syllabusContent.units.length}</div>
+              </div>
+            </div>
+
+            {syllabusContent.description && (
+              <div className="border-b border-border px-5 py-6 sm:px-7">
+                <h2 className="text-lg font-semibold">Course description</h2>
+                <p className="mt-3 text-sm leading-6 text-muted">{syllabusContent.description}</p>
+              </div>
+            )}
+
+            {syllabusContent.objectives.length > 0 && (
+              <div className="border-b border-border px-5 py-6 sm:px-7">
+                <h2 className="text-lg font-semibold">Course objectives</h2>
+                <ul className="mt-3 list-disc space-y-1.5 pl-5 text-sm leading-6 text-muted marker:text-accent">
+                  {syllabusContent.objectives.map((objective, i) => (
+                    <li key={i}>{objective}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {syllabusContent.units.length > 0 && (
+              <div className="border-b border-border px-5 py-6 sm:px-7">
+                <div className="flex items-center gap-2">
+                  <BookOpen size={20} className="text-accent" />
+                  <h2 className="text-lg font-semibold">Course contents</h2>
+                </div>
+                <div className="mt-5 divide-y divide-border">
+                  {syllabusContent.units.map((unit, i) => (
+                    <div key={i} className="py-4 first:pt-0 last:pb-0">
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <h3 className="font-semibold">{unit.title}</h3>
+                        {unit.hours != null && (
+                          <span className="inline-flex items-center gap-1.5 rounded-md bg-accent/10 px-2.5 py-1 text-xs font-medium text-accent">
+                            <Clock3 size={13} />
+                            {unit.hours} {unit.hours === 1 ? "hour" : "hours"}
+                          </span>
+                        )}
+                      </div>
+                      {unit.topics.length > 0 && (
+                        <ul className="mt-2 list-disc space-y-1 pl-5 text-sm leading-6 text-muted">
+                          {unit.topics.map((topic, j) => (
+                            <li key={j}>{topic}</li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {syllabusContent.references.length > 0 && (
+              <div className="border-b border-border px-5 py-6 sm:px-7">
+                <h2 className="text-lg font-semibold">References</h2>
+                <ol className="mt-3 list-decimal space-y-1.5 pl-5 text-sm leading-6 text-muted">
+                  {syllabusContent.references.map((reference, i) => (
+                    <li key={i}>{reference}</li>
+                  ))}
+                </ol>
+              </div>
+            )}
+
+            {activeSyllabus && (
+              <div className="px-5 py-4 sm:px-7">
+                <a
+                  href={activeSyllabus.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(event) => {
+                    event.preventDefault();
+                    setSelectedPdf(activeSyllabus);
+                  }}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-border px-4 py-2 text-sm font-medium transition-colors hover:bg-surface-2"
+                >
+                  <FileText size={14} />
+                  View original syllabus PDF
+                </a>
+              </div>
+            )}
+          </div>
         ) : active === "syllabus" ? (
           <div className="overflow-hidden rounded-2xl border border-border bg-surface">
             <div className="grid grid-cols-2 gap-4 border-b border-border px-5 py-5 sm:grid-cols-4">

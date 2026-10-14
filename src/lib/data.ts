@@ -24,7 +24,20 @@ export type Subject = {
   difficulty: Difficulty;
   sort_order: number;
   oneshot_video_url: string | null;
-  overall_notes_url: string | null;
+  syllabus_content: SyllabusContent | null;
+};
+
+// Formatted syllabus extracted in the admin app (mirrors admin/src/lib/syllabus.ts).
+export type SyllabusUnit = { title: string; hours: number | null; topics: string[] };
+
+export type SyllabusContent = {
+  credit_hours: number | null;
+  lecture_hours: number | null;
+  description: string | null;
+  objectives: string[];
+  units: SyllabusUnit[];
+  references: string[];
+  source_url: string | null;
 };
 
 export type Lesson = {

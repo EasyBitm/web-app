@@ -25,21 +25,18 @@ where code like 'TEST-%'
 
 -- Subjects (sort_order 101+ so they appear after any real subjects).
 insert into public.subjects
-  (semester_id, name, code, chapters, difficulty, sort_order, oneshot_video_url, overall_notes_url)
+  (semester_id, name, code, chapters, difficulty, sort_order, oneshot_video_url)
 select
   (select id from public.semesters where slug = 'fifth'),
-  v.name, v.code, v.chapters, v.difficulty, v.sort_order, v.oneshot_video_url, v.overall_notes_url
+  v.name, v.code, v.chapters, v.difficulty, v.sort_order, v.oneshot_video_url
 from (values
   ('[TEST] Artificial Intelligence', 'TEST-501', 5, 'Medium', 101,
-    'https://www.youtube.com/watch?v=aircAruvnKk',
-    'https://raw.githubusercontent.com/mozilla/pdf.js/master/web/compressed.tracemonkey-pldi-09.pdf'),
+    'https://www.youtube.com/watch?v=aircAruvnKk'),
   ('[TEST] Compiler Design', 'TEST-502', 4, 'Hard', 102,
-    'https://www.youtube.com/watch?v=IHZwWFHWa-w',
-    'https://raw.githubusercontent.com/mozilla/pdf.js/master/web/compressed.tracemonkey-pldi-09.pdf'),
+    'https://www.youtube.com/watch?v=IHZwWFHWa-w'),
   ('[TEST] System Analysis & Design', 'TEST-503', 4, 'Easy', 103,
-    null,
     null)
-) as v(name, code, chapters, difficulty, sort_order, oneshot_video_url, overall_notes_url);
+) as v(name, code, chapters, difficulty, sort_order, oneshot_video_url);
 
 -- Course outline (lessons).
 insert into public.lessons (subject_id, title, hours, sort_order)
