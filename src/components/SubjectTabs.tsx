@@ -10,7 +10,7 @@ import {
   ListChecks,
   LockKeyhole,
   Video,
-  ImageIcon,
+  FileQuestion,
   PenLine,
   Pause,
   Play,
@@ -33,7 +33,7 @@ const kindMeta: Record<TabKind, { label: string; icon: LucideIcon }> = {
   notes: { label: "Notes", icon: FileText },
   handwritten_notes: { label: "Handwritten Notes", icon: PenLine },
   syllabus: { label: "Syllabus", icon: ListChecks },
-  question_paper: { label: "Question Papers", icon: ImageIcon },
+  question_paper: { label: "Question Papers", icon: FileQuestion },
 };
 
 function groupByYear(items: Resource[]) {
@@ -44,6 +44,10 @@ function groupByYear(items: Resource[]) {
     year,
     items: items.filter((r) => (r.year ?? 0) === year),
   }));
+}
+
+function isPdfUrl(url: string) {
+  return /\.pdf($|[?#])/i.test(url);
 }
 
 function getYoutubeThumbnail(url: string) {
@@ -332,27 +336,23 @@ export default function SubjectTabs({
                 <div className="text-xs font-medium text-muted">
                   {year || "Year unspecified"}
                 </div>
-                <div className="mt-2 grid grid-cols-2 gap-3 sm:grid-cols-3">
+                <div className="mt-2 flex flex-col gap-2">
                   {yearItems.map((item) => (
                     <a
                       key={item.id}
                       href={item.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="group overflow-hidden rounded-xl border border-border bg-surface"
+                      onClick={(event) => {
+                        // Older question papers were uploaded as images; let those open in a new tab.
+                        if (!isPdfUrl(item.url)) return;
+                        event.preventDefault();
+                        setSelectedPdf(item);
+                      }}
+                      className="flex items-center gap-2 rounded-xl border border-border bg-surface px-4 py-3 text-sm font-medium transition-colors hover:bg-surface-2"
                     >
-                      <div className="relative hidden aspect-3/4 w-full bg-surface-2 sm:block">
-                        <Image
-                          src={item.url}
-                          alt={item.title}
-                          fill
-                          className="object-cover transition-transform group-hover:scale-105"
-                          unoptimized
-                        />
-                      </div>
-                      <div className="px-2 py-1.5 text-xs font-medium">
-                        {item.title}
-                      </div>
+                      <FileQuestion size={16} className="shrink-0 text-muted" />
+                      {item.title}
                     </a>
                   ))}
                 </div>
