@@ -2,8 +2,6 @@ import { Bell, ExternalLink, FileText } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import Header from "../../src/components/Header";
-import Footer from "../../src/components/Footer";
-import Breadcrumbs from "../../src/components/Breadcrumbs";
 import LiveRefresh from "../../src/components/LiveRefresh";
 import {
   getBitmNotices,
@@ -108,12 +106,10 @@ export default async function NoticesPage({
 
   return (
     <div className="flex flex-col flex-1">
-      <Header />
+      <Header breadcrumbs={[{ label: "Home", href: "/" }, { label: "Notices" }]} />
       <LiveRefresh />
 
-      <section className="mx-auto min-h-screen w-full max-w-5xl px-6 py-4">
-        <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Notices" }]} />
-
+      <section className="mx-auto w-full max-w-5xl flex-1 px-6 pb-4">
         <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
           <h1 className="text-3xl font-bold tracking-tight">Notices</h1>
 
@@ -204,8 +200,6 @@ export default async function NoticesPage({
           </div>
         )}
       </section>
-
-      <Footer />
     </div>
   );
 }

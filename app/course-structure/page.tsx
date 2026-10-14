@@ -1,8 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Header from "../../src/components/Header";
-import Footer from "../../src/components/Footer";
-import Breadcrumbs from "../../src/components/Breadcrumbs";
 import { getCourseStructure } from "../../src/lib/data";
 import PdfDocumentViewer from "../../src/components/PdfDocumentViewer";
 
@@ -40,16 +38,14 @@ export default async function CourseStructurePage() {
 
   return (
     <div className="flex flex-1 flex-col">
-      <Header />
+      <Header
+        breadcrumbs={[
+          { label: "Home", href: "/" },
+          { label: "Course structure" },
+        ]}
+      />
 
-      <section className="mx-auto min-h-screen w-full max-w-5xl px-6 py-4">
-        <Breadcrumbs
-          items={[
-            { label: "Home", href: "/" },
-            { label: "Course structure" },
-          ]}
-        />
-
+      <section className="mx-auto w-full max-w-5xl flex-1 px-6 pb-4">
         <div className="mt-6 flex items-center justify-between gap-4">
           <h1 className="text-2xl font-bold tracking-tight">
             BITM course structure
@@ -72,8 +68,6 @@ export default async function CourseStructurePage() {
           />
         </div>
       </section>
-
-      <Footer />
     </div>
   );
 }

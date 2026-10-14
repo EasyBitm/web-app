@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { ChevronDown, LogIn, LogOut, Menu, Moon, Sun, User, X } from "lucide-react";
 import { supabase } from "../lib/supabaseClient";
+import Breadcrumbs, { type Crumb } from "./Breadcrumbs";
 
 type SemesterLink = { slug: string; name: string };
 
@@ -242,7 +243,8 @@ function UserProfile() {
 const mobileLinkClass =
   "rounded-lg px-3 py-2 text-sm font-medium text-muted transition-colors hover:bg-surface-2 hover:text-foreground";
 
-export default function Header() {
+// Breadcrumbs render inside the sticky header so they stay pinned while the page scrolls.
+export default function Header({ breadcrumbs }: { breadcrumbs?: Crumb[] } = {}) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [footerVisible, setFooterVisible] = useState(false);
   const [mobileSemesters, setMobileSemesters] = useState<SemesterLink[]>([]);
@@ -362,6 +364,12 @@ export default function Header() {
           {menuOpen ? <X size={20} /> : <Menu size={20} />}
         </button>
       </div>
+
+      {breadcrumbs && (
+        <div className="w-full px-4 pb-2.5 sm:px-6">
+          <Breadcrumbs items={breadcrumbs} />
+        </div>
+      )}
 
       {/* Mobile navigation panel */}
       {menuOpen && (

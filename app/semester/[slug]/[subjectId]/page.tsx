@@ -1,8 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Header from "../../../../src/components/Header";
-import Footer from "../../../../src/components/Footer";
-import Breadcrumbs from "../../../../src/components/Breadcrumbs";
 import SubjectTabs from "../../../../src/components/SubjectTabs";
 import MediaModalButton from "../../../../src/components/MediaModalButton";
 import {
@@ -77,17 +75,15 @@ export default async function SubjectPage({
 
   return (
     <div className="flex flex-col flex-1">
-      <Header />
+      <Header
+        breadcrumbs={[
+          { label: "Home", href: "/" },
+          { label: semester?.name ?? slug, href: `/semester/${slug}` },
+          { label: subject.name },
+        ]}
+      />
 
-      <section className="mx-auto min-h-screen w-full max-w-5xl px-6 py-4">
-        <Breadcrumbs
-          items={[
-            { label: "Home", href: "/" },
-            { label: semester?.name ?? slug, href: `/semester/${slug}` },
-            { label: subject.name },
-          ]}
-        />
-
+      <section className="mx-auto w-full max-w-5xl flex-1 px-6 pb-4">
         <p className="mt-6 text-xs font-medium uppercase tracking-wide text-muted">
           {subject.code}
         </p>
@@ -123,8 +119,6 @@ export default async function SubjectPage({
           subject={subject}
         />
       </section>
-
-      <Footer />
     </div>
   );
 }

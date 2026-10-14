@@ -55,12 +55,16 @@ export default function PdfDocumentViewer({
   title: string;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
+  // "loading" until the first page is drawn; later pages keep rendering underneath.
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
+  const [progress, setProgress] = useState<{ done: number; total: number } | null>(null);
 
   useEffect(() => {
     let cancelled = false;
 
     async function renderPdf() {
+      setStatus("loading");
+      setProgress(null);
       try {
         const pdfjs = await loadPdfJs();
         if (cancelled || !containerRef.current) return;
@@ -89,9 +93,10 @@ export default function PdfDocumentViewer({
           container.appendChild(pageShell);
 
           await page.render({ canvasContext: context, viewport }).promise;
+          if (cancelled) return;
+          setStatus("ready");
+          setProgress({ done: pageNumber, total: pdf.numPages });
         }
-
-        if (!cancelled) setStatus("ready");
       } catch {
         if (!cancelled) setStatus("error");
       }
@@ -106,17 +111,24 @@ export default function PdfDocumentViewer({
   return (
     <div aria-label={title}>
       {status === "loading" && (
-        <div className="rounded-xl  bg-surface px-6 py-12 text-center text-sm text-muted">
-          Loading syllabus…
+        <div className="rounded-xl bg-surface px-6 py-12 text-center text-sm text-muted">
+          Loading document…
         </div>
       )}
       {status === "error" && (
         <div className="rounded-xl bg-surface px-6 py-12 text-center text-sm text-muted">
-          This syllabus could not be displayed right now. Please try again or open the source document directly.
+          This document could not be displayed right now. Please try again or open the original.
         </div>
       )}
       <div ref={containerRef} className="flex flex-col gap-5" />
-      {status === "ready" && <span className="sr-only">Syllabus loaded</span>}
+      {status === "ready" && progress && progress.done < progress.total && (
+        <div className="mt-5 text-center text-sm text-muted">
+          Loading page {progress.done + 1} of {progress.total}…
+        </div>
+      )}
+      {status === "ready" && progress?.done === progress?.total && (
+        <span className="sr-only">Document loaded</span>
+      )}
     </div>
   );
 }

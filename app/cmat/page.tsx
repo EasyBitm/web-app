@@ -1,8 +1,6 @@
 import { GraduationCap } from "lucide-react";
 import type { Metadata } from "next";
 import Header from "../../src/components/Header";
-import Footer from "../../src/components/Footer";
-import Breadcrumbs from "../../src/components/Breadcrumbs";
 
 export const metadata: Metadata = {
   title: "CMAT Preparation",
@@ -18,13 +16,9 @@ export const metadata: Metadata = {
 export default function CmatPage() {
   return (
     <div className="flex flex-col flex-1">
-      <Header />
+      <Header breadcrumbs={[{ label: "Home", href: "/" }, { label: "CMAT" }]} />
 
-      <section className="relative flex h-screen flex-col items-center justify-center px-6 text-center">
-        <div className="absolute left-6 top-6">
-          <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "CMAT" }]} />
-        </div>
-
+      <section className="relative flex flex-1 flex-col items-center justify-center px-6 py-16 text-center">
         <div className="flex flex-col items-center gap-4">
           <span className="flex h-14 w-14 items-center justify-center rounded-full bg-accent/15 text-accent">
             <GraduationCap size={28} />
@@ -36,8 +30,6 @@ export default function CmatPage() {
           </p>
         </div>
       </section>
-
-      <Footer />
     </div>
   );
 }

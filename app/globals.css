@@ -40,6 +40,16 @@ body {
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }
 
+/* Hide the page scrollbar (scrolling still works) so the layout width doesn't
+   jump between short and long tabs when the scrollbar appears. */
+html {
+  scrollbar-width: none;
+}
+
+html::-webkit-scrollbar {
+  display: none;
+}
+
 /* Keep mobile layouts text-first and avoid loading visual assets into view. */
 @media (max-width: 639px) {
   img {

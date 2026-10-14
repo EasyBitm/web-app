@@ -3,8 +3,6 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { BookOpen, Layers } from "lucide-react";
 import Header from "../../../src/components/Header";
-import Footer from "../../../src/components/Footer";
-import Breadcrumbs from "../../../src/components/Breadcrumbs";
 import { getSemester, type Difficulty } from "../../../src/lib/data";
 
 export const dynamic = "force-dynamic";
@@ -56,17 +54,14 @@ export default async function SemesterPage({
 
   return (
     <div className="flex flex-col flex-1">
-      <Header />
+      <Header
+        breadcrumbs={[
+          { label: "Home", href: "/" },
+          { label: semester.name },
+        ]}
+      />
 
-      <section className="mx-auto min-h-screen w-full max-w-5xl px-6 py-4">
-        <Breadcrumbs
-          items={[
-            { label: "Home", href: "/" },
-            { label: semester.name },
-          ]}
-        />
-
-        
+      <section className="mx-auto w-full max-w-5xl flex-1 px-6 pb-4">
         <div className="mt-2 flex flex-wrap items-center justify-between gap-3">
 
         <h1 className="mt-6 text-3xl font-bold tracking-tight">
@@ -119,8 +114,6 @@ export default async function SemesterPage({
           ))}
         </div>
       </section>
-
-      <Footer />
     </div>
   );
 }

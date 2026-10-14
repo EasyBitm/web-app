@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { ArrowRight, BookOpen, Bug, Heart, Mail, Share2 } from "lucide-react";
 import Header from "../../src/components/Header";
-import Footer from "../../src/components/Footer";
 import FeedbackButton from "../../src/components/FeedbackButton";
 
 export const metadata: Metadata = {
@@ -107,8 +106,6 @@ export default function SupportPage() {
           </div>
         </section>
       </main>
-
-      <Footer />
     </div>
   );
 }

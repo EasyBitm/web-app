@@ -1,8 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Header from "../../../../src/components/Header";
-import Footer from "../../../../src/components/Footer";
-import Breadcrumbs from "../../../../src/components/Breadcrumbs";
 import { getSemester } from "../../../../src/lib/data";
 import PdfDocumentViewer from "../../../../src/components/PdfDocumentViewer";
 
@@ -49,15 +47,14 @@ export default async function OverallSyllabusPage({
 
   return (
     <div className="flex flex-1 flex-col">
-      <Header />
-      <section className="mx-auto min-h-screen w-full max-w-5xl px-6 py-4">
-        <Breadcrumbs
-          items={[
-            { label: "Home", href: "/" },
-            { label: semester.name, href: `/semester/${slug}` },
-            { label: "Overall syllabus" },
-          ]}
-        />
+      <Header
+        breadcrumbs={[
+          { label: "Home", href: "/" },
+          { label: semester.name, href: `/semester/${slug}` },
+          { label: "Overall syllabus" },
+        ]}
+      />
+      <section className="mx-auto w-full max-w-5xl flex-1 px-6 pb-4">
         <div className="mt-6 flex items-center justify-between gap-4">
           <h1 className="text-2xl font-bold tracking-tight">
             {semester.name} overall syllabus
@@ -78,7 +75,6 @@ export default async function OverallSyllabusPage({
           />
         </div>
       </section>
-      <Footer />
     </div>
   );
 }
